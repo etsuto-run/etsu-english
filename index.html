@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Etsu English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    --bg: #0B1120;
+    --surface: #131B2E;
+    --surface-2: #1B2540;
+    --line: #263352;
+    --text: #EDEFF5;
+    --muted: #A9B2C6;
+    --accent: #E85A2A;
+    --accent-dim: #7A3018;
+    --good: #4ADE80;
+    --bad: #F87171;
+    --radius: 14px;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); background: var(--bg); }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  .display {
+    font-family: 'Bebas Neue', 'Inter', system-ui, sans-serif;
+    letter-spacing: 0.02em;
+  }
+  #app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  header.topbar {
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    background: var(--bg);
+    z-index: 5;
+  }
+  header.topbar .brand { font-family:'Bebas Neue'; font-size: 26px; letter-spacing: 0.03em; }
+  header.topbar .brand span { color: var(--accent); }
+  header.topbar .streak { font-size: 13px; color: var(--muted); display:flex; align-items:center; gap:5px; }
+  header.topbar .streak b { color: var(--accent); font-weight:700; }
+
+  main { flex: 1; padding: 20px 20px 100px; }
+
+  /* ---- HOME ---- */
+  .hero {
+    background: linear-gradient(160deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute; right: -30px; bottom: -30px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+  }
+  .hero .greet { color: var(--muted); font-size: 14px; margin: 0 0 4px; }
+  .hero .goal { font-family:'Bebas Neue'; font-size: 34px; line-height:1.05; margin: 0; }
+  .hero .goal em { font-style: normal; color: var(--accent); }
+  .hero .sub { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+  .tasklist { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .task {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .task:active { transform: scale(0.98); }
+  .task.done { opacity: 0.55; }
+  .task .icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    background: var(--surface-2);
+  }
+  .task .body { flex: 1; min-width: 0; }
+  .task .body .name { font-weight: 600; font-size: 15px; }
+  .task .body .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .task .check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--line);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--bg);
+  }
+  .task.done .check { background: var(--good); border-color: var(--good); }
+
+  .cta {
+    display: block; width: 100%;
+    background: var(--accent);
+    color: #1A0A02;
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  .cta:active { filter: brightness(0.92); }
+  .cta.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+    font-weight: 600;
+  }
+
+  .statgrid { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .statcard { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  .statcard .num { font-family:'Bebas Neue'; font-size: 26px; color: var(--accent); }
+  .statcard .lbl { font-size: 12px; color: var(--muted); margin-top:2px; }
+
+  /* ---- SCREEN HEADER ---- */
+  .screen-head { display:flex; align-items:center; gap: 12px; margin-bottom: 18px; }
+  .backbtn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--surface); border:1px solid var(--line);
+    color: var(--text); font-size: 18px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0;
+  }
+  .screen-title { font-family:'Bebas Neue'; font-size: 26px; }
+  .screen-title .sec { color: var(--muted); font-size: 13px; font-family:'Inter'; display:block; margin-top:2px; font-weight:600; }
+
+  /* ---- VOCAB ---- */
+  .progressbar { height: 5px; background: var(--surface-2); border-radius: 3px; overflow: hidden; margin-bottom: 22px; }
+  .progressbar > div { height: 100%; background: var(--accent); transition: width .25s ease; }
+  .qword { text-align:center; margin: 10px 0 26px; }
+  .qword .w { font-family:'Bebas Neue','Inter',sans-serif; font-size: 44px; color: var(--text); }
+  .qword .hint { color: var(--muted); font-size: 14px; font-weight: 600; margin-top: 8px; }
+  .qword .cat { display: inline-block; color: var(--accent); font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-top: 10px; }
+  .options { display:flex; flex-direction:column; gap: 10px; }
+  .opt {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+    font-size: 15px; text-align:left; cursor:pointer; color: var(--text);
+  }
+  .opt.correct { border-color: var(--good); background: rgba(74,222,128,0.1); }
+  .opt.wrong { border-color: var(--bad); background: rgba(248,113,113,0.1); }
+  .opt:disabled { cursor: default; }
+
+  .resultcard { text-align:center; padding: 30px 10px; }
+  .resultcard .score { font-family:'Bebas Neue'; font-size: 56px; color: var(--accent); }
+  .resultcard .msg { color: var(--muted); font-size: 14px; margin: 6px 0 24px; }
+
+  /* ---- CONVERSATION ---- */
+  .themegrid { display:flex; flex-direction:column; gap: 8px; }
+  .themebtn {
+    background: var(--surface); border:1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px;
+    display:flex; justify-content:space-between; align-items:center;
+    cursor:pointer; color: var(--text); font-size: 14.5px; font-weight: 500;
+  }
+  .themebtn .jp { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .themebtn .arrow { color: var(--accent); font-size: 18px; }
+
+  .bubble { border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; font-size: 14.5px; line-height:1.5; }
+  .bubble.npc { background: var(--surface); border:1px solid var(--line); }
+  .bubble.npc .who { font-size: 11.5px; color: var(--accent); font-weight:700; margin-bottom: 4px; letter-spacing:.03em; }
+  .bubble.me { background: var(--surface-2); border:1px solid var(--line); margin-left: 26px; }
+  .bubble.me .who { font-size: 11.5px; color: var(--muted); font-weight:700; margin-bottom: 4px; letter-spacing:.03em; }
+  .bubble.thinking { color: var(--muted); font-style: normal; }
+  .dot { display:inline-block; width:5px; height:5px; border-radius:50%; background: var(--muted); margin-right:3px; animation: blink 1.2s infinite; }
+  .dot:nth-child(2){ animation-delay: .2s; } .dot:nth-child(3){ animation-delay: .4s; }
+  @keyframes blink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
+
+  .evalcard { border-radius: var(--radius); border:1px solid var(--line); background: var(--surface); padding: 14px 16px; margin-bottom: 14px; }
+  .evalcard .row { display:flex; gap: 8px; margin-bottom: 8px; font-size: 14px; }
+  .evalcard .row .k { color: var(--muted); flex-shrink:0; min-width: 90px; font-weight:600; }
+  .evalcard .row.better .k { color: var(--accent); }
+  .evalcard .row.point { border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 2px; }
+  .evalcard .row.point .k { color: var(--muted); }
+  .pill { display:inline-block; font-size: 11px; font-weight:700; padding: 3px 9px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
+  .pill.ok { background: rgba(74,222,128,0.15); color: var(--good); }
+  .pill.issue { background: rgba(248,113,113,0.15); color: var(--bad); }
+  .pill.high { background: rgba(248,113,113,0.15); color: var(--bad); }
+  .pill.medium { background: rgba(232,90,42,0.15); color: var(--accent); }
+  .pill.low { background: rgba(139,147,167,0.15); color: var(--muted); }
+
+  .finishbar { display:flex; gap: 10px; margin-top: 4px; }
+  .finishbar .cta { flex:1; }
+  .duebadge { font-size: 12px; color: var(--accent); font-weight: 700; margin-left: 8px; }
+
+  textarea.answer {
+    width: 100%; min-height: 90px;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); color: var(--text);
+    padding: 14px 16px; font-size: 15px; font-family: inherit;
+    resize: vertical; margin-bottom: 12px;
+  }
+  textarea.answer:focus { outline: none; border-color: var(--accent); }
+
+  .feedback { display:flex; flex-direction:column; gap: 12px; margin-top: 6px; }
+  .fbrow { background: var(--surface); border:1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  .fbrow .lbl { font-size: 11.5px; color: var(--accent); font-weight:700; letter-spacing:.03em; margin-bottom: 6px; }
+  .fbrow .val { font-size: 14.5px; line-height: 1.5; }
+  .fbrow.natural .val { font-style: normal; }
+
+  /* ---- REVIEW ---- */
+  .empty { text-align:center; padding: 60px 20px; color: var(--muted); }
+  .empty .big { font-size: 40px; margin-bottom: 10px; }
+  .reviewcard { margin-bottom: 4px; }
+  .reviewcard .jp { font-size: 16px; margin-bottom: 14px; line-height:1.5; }
+  input.answer {
+    width: 100%; background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); color: var(--text);
+    padding: 14px 16px; font-size: 15px; font-family: inherit;
+    margin-bottom: 12px;
+  }
+  input.answer:focus { outline: none; border-color: var(--accent); }
+  .correctbox { background: rgba(74,222,128,0.1); border:1px solid var(--good); border-radius: var(--radius); padding: 14px 16px; margin-top: 6px; }
+  .correctbox .lbl { font-size: 11.5px; color: var(--good); font-weight:700; margin-bottom: 4px; }
+
+  /* ---- NAV ---- */
+  nav.tabbar {
+    position: sticky; bottom: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    display: flex;
+    max-width: 480px; margin: 0 auto; width: 100%;
+  }
+  nav.tabbar button {
+    flex: 1; background: none; border: none; color: var(--muted);
+    padding: 10px 4px 8px; font-size: 11px; font-family: inherit; font-weight: 600;
+    display:flex; flex-direction: column; align-items:center; gap: 4px;
+    cursor: pointer;
+  }
+  nav.tabbar button .ic { font-size: 19px; }
+  nav.tabbar button.active { color: var(--accent); }
+
+  ::selection { background: var(--accent-dim); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">ETSU <span>ENGLISH</span></div>
+    <div class="streak">🔥 <b id="streakCount">0</b>日連続</div>
+  </header>
+  <main id="main"></main>
+  <nav class="tabbar" id="tabbar">
+    <button data-tab="home"><span class="ic">🏠</span>ホーム</button>
+    <button data-tab="vocab"><span class="ic">🔤</span>単語</button>
+    <button data-tab="conversation"><span class="ic">💬</span>会話</button>
+    <button data-tab="review"><span class="ic">🔁</span>復習</button>
+    <button data-tab="test"><span class="ic">📝</span>テスト</button>
+  </nav>
+</div>
+
+<script>
+/* ============ DATA ============ */
+const WORD_BANK = [
+  {w:"pace", jp:"ペース", pos:"n.", alternatives:["速度","歩調"], close:["スピード"], category:"Running", distractors:["筋肉","栄養補給","監督"], example:"He set an easy ___ for the first kilometer.", accepted:["paces"]},
+  {w:"recovery", jp:"回復", pos:"n.", alternatives:["リカバリー","疲労回復"], close:["休養","休憩"], category:"Recovery", distractors:["加速","脱水","怪我"], example:"Stretching and eating well are key parts of ___.", accepted:["recoveries"]},
+  {w:"teammate", jp:"チームメイト", pos:"n.", alternatives:["チームの仲間","味方選手"], close:["友達","同僚"], category:"Team Training", distractors:["対戦相手","審判","観客"], example:"My ___ helped push the pace on the last rep.", accepted:["teammates"]},
+  {w:"coach", jp:"コーチ", pos:"n.", alternatives:["指導者","監督"], close:["先生","トレーナー"], category:"Training", distractors:["選手","記録係","スポンサー"], example:"The ___ gave us today's workout plan.", accepted:["coaches"]},
+  {w:"facility", jp:"施設", pos:"n.", alternatives:["設備"], close:["建物","場所"], category:"University of Toronto", distractors:["奨学金","履歴書","日程"], example:"The training ___ at U of T has a full indoor track.", accepted:["facilities"]},
+  {w:"injury", jp:"怪我", pos:"n.", alternatives:["負傷","故障"], close:["痛み","疲労"], category:"Injury", distractors:["勝利","記録","契約"], example:"He's been dealing with a calf ___ since Tuesday.", accepted:["injuries"]},
+  {w:"competition", jp:"大会", pos:"n.", alternatives:["競技会","試合"], close:["練習","イベント"], category:"Running", distractors:["練習","休養日","移動"], example:"Etsu is preparing for a big ___ next month.", accepted:["competitions"]},
+  {w:"warm-up", jp:"アップ", pos:"n.", alternatives:["準備運動","ウォームアップ"], close:["ストレッチ","体操"], category:"Training", distractors:["整理体操","筋トレ","水分補給"], example:"We always do a light jog as a ___ before hard sessions.", accepted:["warmup","warm up","warmups","warm ups"]},
+  {w:"interval", jp:"インターバル走", pos:"n.", alternatives:["間欠走"], close:["持久走","反復練習"], category:"Track & Field", distractors:["持久走","休憩室","坂道"], example:"We ran 6x1000m ___s at threshold pace.", accepted:["intervals"]},
+  {w:"mileage", jp:"走行距離", pos:"n.", alternatives:["週間走行量","走った距離"], close:["距離","運動量"], category:"Training", distractors:["体重","心拍数","気温"], example:"My weekly ___ is around 100 kilometers.", accepted:[]},
+  {w:"roommate", jp:"ルームメイト", pos:"n.", alternatives:["同室者","同居人"], close:["友達","隣人"], category:"Daily Life", distractors:["家主","隣人","同僚"], example:"My ___ and I share a small kitchen in the dorm.", accepted:["roommates","room mate","room mates"]},
+  {w:"dormitory", jp:"寮", pos:"n.", alternatives:["学生寮"], close:["宿舎","住居"], category:"University", distractors:["体育館","図書館","食堂"], example:"I live in a ___ near the track.", accepted:["dorm","dorms","dormitories"]},
+  {w:"scholarship", jp:"奨学金", pos:"n.", alternatives:[], close:["学費援助","支援金"], category:"University", distractors:["授業料","保証金","罰金"], example:"He received a sports ___ to study in Canada.", accepted:["scholarships"]},
+  {w:"visa", jp:"ビザ", pos:"n.", alternatives:["査証"], close:["許可証","証明書"], category:"Canada", distractors:["保険証","学生証","航空券"], example:"I need a student ___ before I can train in Toronto.", accepted:["visas"]},
+  {w:"apartment", jp:"アパート", pos:"n.", alternatives:["部屋","マンション"], close:["住居","家"], category:"Daily Life", distractors:["寮","体育館","駐車場"], example:"We're looking for an ___ close to campus.", accepted:["apartments"]},
+  {w:"groceries", jp:"食料品", pos:"n.", alternatives:["食材","日用品"], close:["買い物","食べ物"], category:"Daily Life", distractors:["衣類","医薬品","文房具"], example:"I need to buy ___ before practice tomorrow.", accepted:["grocery"]},
+  {w:"homesick", jp:"ホームシックな", pos:"adj.", alternatives:["故郷が恋しい","望郷の念にかられた"], close:["寂しい","つらい"], category:"Daily Life", distractors:["空腹な","疲労した","興奮した"], example:"It's normal to feel a little ___ during your first month abroad.", accepted:[]},
+  {w:"jet lag", jp:"時差ぼけ", pos:"n.", alternatives:[], close:["疲労","眠気"], category:"Travel", distractors:["乗り物酔い","筋肉痛","脱水症状"], example:"After the flight to Canada, I had bad ___ for a few days.", accepted:["jetlag"]},
+  {w:"locker room", jp:"ロッカールーム", pos:"n.", alternatives:["更衣室"], close:["部屋","控室"], category:"Team Training", distractors:["会議室","医務室","食堂"], example:"We change into our spikes in the ___.", accepted:["locker rooms"]},
+  {w:"physiotherapist", jp:"理学療法士", pos:"n.", alternatives:["フィジオセラピスト"], close:["医者","トレーナー"], category:"Injury", distractors:["栄養士","通訳","会計士"], example:"The team ___ checked my calf after practice.", accepted:["physiotherapists","physio"]},
+  {w:"stride", jp:"ストライド", pos:"n.", alternatives:["歩幅"], close:["歩き方","フォーム"], category:"Track & Field", distractors:["反発力","筋力","体幹"], example:"His ___ looked much longer in the second half of the race.", accepted:["strides"]},
+  {w:"tempo run", jp:"テンポ走", pos:"n.", alternatives:[], close:["インターバル走","ジョグ"], category:"Training", distractors:["インターバル走","ジョグ","坂道ダッシュ"], example:"Today's session is a 20-minute ___ at threshold pace.", accepted:["tempo runs"]},
+  {w:"cooldown", jp:"クールダウン", pos:"n.", alternatives:["整理運動"], close:["ストレッチ","休憩"], category:"Training", distractors:["準備運動","筋トレ","有酸素運動"], example:"Don't skip the ___ jog after a hard workout.", accepted:["cool down","cool-down","cooldowns"]},
+  {w:"tuition", jp:"授業料", pos:"n.", alternatives:["学費"], close:["費用","料金"], category:"University", distractors:["家賃","保険料","通信費"], example:"International ___ can be expensive at Canadian universities.", accepted:[]},
+  {w:"permit", jp:"許可証", pos:"n.", alternatives:["許可"], close:["証明書","ビザ"], category:"Canada", distractors:["診断書","領収書","予約票"], example:"I applied for a work ___ for my working holiday.", accepted:["permits"]}
+];
+
+const CONVERSATIONS = [
+  {id:"training", title:"Team training session", jp:"チーム練習について話す", category:"Training",
+   prompt:"Hey Etsu! How was your training today?",
+   who:"Jake · Teammate",
+   model:"It was hard, but I ran 12 kilometers at 3 minutes per kilometer.",
+   modelJp:"距離・ペース・きつさを数字で伝えると海外の選手にも正確に伝わる。"},
+  {id:"trackfield", title:"Track & field session", jp:"トラック練習について話す", category:"Track & Field",
+   prompt:"Coach put us on the track today — 8x400m. Have you done a session like that before?",
+   who:"Jake · Teammate",
+   model:"Yeah, I do 400m reps often in Japan, usually around 68 seconds each.",
+   modelJp:"インターバルのタイムを秒で言えると具体的に伝わる。"},
+  {id:"racePB", title:"Talking about a race", jp:"レースについて話す", category:"Running",
+   prompt:"How did the race go last weekend? I heard you ran a new personal best!",
+   who:"Jake · Teammate",
+   model:"It went really well — I ran 14:11, which is a 6-second PB.",
+   modelJp:"結果＋数値＋感想の順で話すと伝わりやすい。「PB」はそのまま海外でも通じる略語。"},
+  {id:"recovery", title:"Recovery after a hard session", jp:"リカバリーについて話す", category:"Recovery",
+   prompt:"That last rep looked tough — how are your legs feeling? What do you usually do for recovery?",
+   who:"Jake · Teammate",
+   model:"My calves are pretty tight. I usually stretch, foam roll, and eat some protein right after.",
+   modelJp:"疲労の部位＋これからの行動（ストレッチ・補食）を伝えると自然な会話になる。"},
+  {id:"coach", title:"Talking with the coach", jp:"コーチと話す", category:"Training",
+   prompt:"Etsu, welcome to the team. What's your current 5k PB, and what are you aiming for this season?",
+   who:"Coach Radchenko",
+   model:"My current PB is 14:11, and my goal this season is to break 13:30.",
+   modelJp:"実績（PB）と目標を数字ではっきり伝える。海外のコーチは具体的な数字を評価する。"},
+  {id:"uoft", title:"Life at University of Toronto", jp:"University of Torontoでの生活", category:"University of Toronto",
+   prompt:"What made you want to come train with the Varsity Blues here at U of T?",
+   who:"Jake · Teammate",
+   model:"I've always wanted to train with UTTC — I heard the distance group here is really strong.",
+   modelJp:"「なぜここに来たか」を一言で言えるようにしておくと会話がスムーズ。"},
+  {id:"university", title:"University life in Japan", jp:"大学生活について話す", category:"University",
+   prompt:"What's it like being a student-athlete in Japan? Do you have a lot of classes?",
+   who:"Jake · Teammate",
+   model:"It's pretty busy — I study economics, and I also work part-time at my university's cafeteria.",
+   modelJp:"専攻とアルバイトなど、自分の生活を簡潔に伝える練習。"},
+  {id:"canada", title:"Moving to Canada", jp:"カナダでの生活について話す", category:"Canada",
+   prompt:"Is this your first time living outside Japan? What are you most nervous about with Canada?",
+   who:"Jake · Teammate",
+   model:"Yeah, it's my first time. I'm a little nervous about the winter, but I'm excited to train with a new team.",
+   modelJp:"正直に気持ちを伝えつつ前向きな一言を添えると好印象。"},
+  {id:"dailylife", title:"Daily life on campus", jp:"日常生活について話す", category:"Daily Life",
+   prompt:"Are you settling in okay? Have you found a good grocery store near the dorm yet?",
+   who:"Jake · Teammate",
+   model:"Not yet, actually. Do you know a cheap grocery store near the dorm?",
+   modelJp:"日常のちょっとした質問に自然に答えられると生活がスムーズになる。"},
+  {id:"travel", title:"Travel day to a meet", jp:"遠征・移動について話す", category:"Travel",
+   prompt:"We're flying out to the meet on Friday morning. Have you got your travel documents sorted?",
+   who:"Coach Radchenko",
+   model:"Yes, I've got my passport and student visa ready. What time do we need to be at the airport?",
+   modelJp:"移動の準備状況を伝え、必要な情報（集合時間など）を聞き返す練習。"}
+];
+
+/* ============ STATE ============ */
+const STORAGE_KEY = "etsu_english_state_v2";
+const APP_BUILD = "2026-09-23-diag3-fixlayout"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
+const SRS_LADDER = [1, 3, 7, 14, 30]; // days
+
+function isoDate(d) {
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function addDaysIso(baseIso, days) {
+  const d = new Date(baseIso + "T00:00:00");
+  d.setDate(d.getDate() + days);
+  return isoDate(d);
+}
+function todayStr() { return isoDate(new Date()); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+// Days between today and a dueDate (can be negative if overdue), computed from real Date objects
+// (not string comparison), so it's correct across month/year boundaries.
+function daysUntil(dueDateIso) {
+  const today = new Date(todayStr() + "T00:00:00");
+  const due = new Date(dueDateIso + "T00:00:00");
+  return Math.round((due - today) / 86400000);
+}
+function formatDueLabel(dueDateIso) {
+  const d = daysUntil(dueDateIso);
+  if (d < 0) return "復習期限";
+  if (d === 0) return "次回復習：今日";
+  return `次回復習まであと${d}日`;
+}
+
+/* ---- IndexedDB backup layer ----
+   localStorage is the primary store (read synchronously at boot), but every save is ALSO
+   mirrored to IndexedDB as a second, independent persistence mechanism. The two can behave
+   differently under a browser's storage restrictions, so if localStorage ever comes back empty
+   at startup when it shouldn't (data was lost there specifically), IndexedDB gives a real chance
+   of recovering it — this isn't just a diagnostic, it's an actual fallback data path. */
+let __idbConn = null;
+let __idbFailed = false;
+function idbGetConn(callback) {
+  if (__idbFailed) { callback(null); return; }
+  if (__idbConn) { callback(__idbConn); return; }
+  try {
+    if (!window.indexedDB) { __idbFailed = true; callback(null); return; }
+    const req = indexedDB.open("etsu_english_db", 1);
+    req.onupgradeneeded = () => { req.result.createObjectStore("state"); };
+    req.onsuccess = () => { __idbConn = req.result; callback(__idbConn); };
+    req.onerror = () => { __idbFailed = true; callback(null); };
+  } catch (e) { __idbFailed = true; callback(null); }
+}
+function idbSaveState(stateObj) {
+  idbGetConn(db => {
+    if (!db) return;
+    try {
+      const tx = db.transaction("state", "readwrite");
+      tx.objectStore("state").put(JSON.stringify(stateObj), "main");
+    } catch (e) { console.warn("idb save failed", e); }
+  });
+}
+function idbLoadState(callback) {
+  idbGetConn(db => {
+    if (!db) { callback(null); return; }
+    try {
+      const tx = db.transaction("state", "readonly");
+      const getReq = tx.objectStore("state").get("main");
+      getReq.onsuccess = () => callback(getReq.result || null);
+      getReq.onerror = () => callback(null);
+    } catch (e) { callback(null); }
+  });
+}
+// Does this state object represent "nothing has been learned yet"? Used to decide whether a
+// non-empty IndexedDB backup should override what localStorage returned at boot.
+function stateLooksEmpty(st) {
+  if (!st) return true;
+  const noneDone = !st.todayDone || (!st.todayDone.vocab && !st.todayDone.conversation && !st.todayDone.review);
+  const noHistory = (!st.srsItems || st.srsItems.length === 0) && (!st.vocabTotal || st.vocabTotal === 0);
+  return noneDone && noHistory;
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Migration: strip any pre-existing sample/demo items from real user data —
+      // Review must only ever show actual learning history, never bundled sample content.
+      if (parsed.srsItems && parsed.srsItems.some(i => i.type === "seed")) {
+        parsed.srsItems = parsed.srsItems.filter(i => i.type !== "seed");
+      }
+      return parsed;
+    }
+  } catch (e) { console.warn("load failed", e); }
+  return {
+    streak: 0,
+    todayDone: { vocab: false, conversation: false, review: false },
+    todayDate: null,
+    vocabTotal: 0,
+    vocabCorrect: 0,
+    srsItems: []
+  };
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  catch (e) { console.warn("save failed", e); }
+  idbSaveState(state); // fire-and-forget backup write, independent of localStorage's result
+  dbSaveState(state); // fire-and-forget server-side backup — not browser storage at all
+}
+
+/* ---- Server-side (db capability) backup layer ----
+   Unlike localStorage/IndexedDB, this data lives on Anthropic's servers, addressed to the
+   signed-in viewer's own account (data/users/<id>/state) — not in the browser at all, so it
+   survives regardless of Safari's local storage policy. Requires being signed in when the page
+   is opened; if not signed in (or the capability isn't granted), this layer is simply inactive
+   and localStorage/IndexedDB remain the only stores, exactly as before. */
+let __dbNS = null, __dbUid = null, __dbReady = false, __dbInitDone = false;
+let __dbWriteInFlight = false, __dbWritePending = false;
+async function dbInit() {
+  if (__dbInitDone) return;
+  __dbInitDone = true;
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [dbCap, userCap] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    if (!dbCap || !userCap) return;
+    const uid = await userCap.id();
+    if (!uid) return; // not signed in / no identity on this view — this layer stays inactive
+    __dbNS = dbCap; __dbUid = uid; __dbReady = true;
+  } catch (e) { console.warn("db init failed", e); }
+}
+function dbStatePath() { return "data/users/" + __dbUid + "/state"; }
+async function dbSaveState(stateObj) {
+  if (!__dbReady) return;
+  if (__dbWriteInFlight) { __dbWritePending = true; return; } // coalesce bursts into one write
+  __dbWriteInFlight = true;
+  try { await __dbNS.doc(dbStatePath()).set(JSON.parse(JSON.stringify(stateObj))); }
+  catch (e) { console.warn("db save failed", e); }
+  __dbWriteInFlight = false;
+  if (__dbWritePending) { __dbWritePending = false; dbSaveState(state); }
+}
+async function dbLoadState() {
+  if (!__dbReady) return null;
+  try {
+    const snap = await __dbNS.doc(dbStatePath()).get();
+    return snap.exists ? snap.data() : null;
+  } catch (e) { console.warn("db load failed", e); return null; }
+}
+
+let state = loadState();
+saveState(); // persists any migration (e.g. removal of legacy sample/seed items) right away
+function applyDayRollover(st) {
+  const t = todayStr();
+  if (st.todayDate !== t) {
+    if (st.todayDate) {
+      const prevAllDone = st.todayDone.vocab && st.todayDone.conversation && st.todayDone.review;
+      if (!prevAllDone) st.streak = 0;
+    }
+    st.todayDate = t;
+    st.todayDone = { vocab: false, conversation: false, review: false };
+  }
+}
+applyDayRollover(state);
+saveState();
+
+// Boot-time reconciliation: if localStorage came back looking like "nothing learned yet" but a
+// backup layer has real history, that means localStorage specifically failed to survive between
+// sessions on this device/browser — restore instead of silently losing it. Checks the server-side
+// db first (most durable — tied to the account, not the browser), then IndexedDB. No-op if
+// nothing better is found, or if this view isn't signed in (db layer simply stays inactive).
+let storageRecoveryNotice = false;
+let storageRecoverySource = null;
+(async function reconcileStorage() {
+  await dbInit();
+  if (__dbReady) {
+    const dbState = await dbLoadState();
+    if (dbState && !stateLooksEmpty(dbState) && stateLooksEmpty(state)) {
+      console.warn("localStorage was empty at boot but the server-side backup had saved data — restoring.");
+      state = dbState;
+      applyDayRollover(state);
+      saveState();
+      storageRecoveryNotice = true;
+      storageRecoverySource = "サーバー（アカウント紐付け）";
+      render();
+      return;
+    }
+    if (dbState === null && !stateLooksEmpty(state)) {
+      dbSaveState(state); // first sync: push existing local data up to the server-side backup
+    }
+  }
+  idbLoadState(idbRaw => {
+    if (!idbRaw) return;
+    let idbState;
+    try { idbState = JSON.parse(idbRaw); } catch (e) { return; }
+    if (stateLooksEmpty(state) && !stateLooksEmpty(idbState)) {
+      console.warn("localStorage was empty at boot but IndexedDB had saved data — restoring from IndexedDB.");
+      state = idbState;
+      applyDayRollover(state);
+      saveState();
+      storageRecoveryNotice = true;
+      storageRecoverySource = "IndexedDB";
+      render();
+    }
+  });
+})();
+
+function markDoneToday(key) {
+  if (!state.todayDone[key]) {
+    state.todayDone[key] = true;
+    if (state.todayDone.vocab && state.todayDone.conversation && state.todayDone.review) {
+      state.streak += 1;
+    }
+    saveState();
+  }
+}
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+function pick(arr, n) { return shuffle(arr).slice(0, n); }
+function normalizeWord(s) { return (s || "").toLowerCase().trim().replace(/[-\s]+/g, ""); }
+function containsJapanese(s) { return /[\u3040-\u30ff\u4e00-\u9fff\uff66-\uff9f]/.test(s || ""); }
+function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+// English recall answer (jp2en / cloze): exact match against the word's canonical spelling
+// or its explicit accepted-variant list only — Japanese input is always rejected outright.
+// This is the fast/free path; classifyEnglishAnswer (below) is what's actually used by the UI,
+// since it also accepts valid synonyms the accepted-list doesn't happen to cover.
+function isEnglishAnswerCorrect(input, word) {
+  if (!input || containsJapanese(input)) return false;
+  const norm = normalizeWord(input);
+  const candidates = [word.w, ...(word.accepted || [])].map(normalizeWord);
+  return candidates.includes(norm);
+}
+
+// Full semantic classification for an English recall answer, generic across every word in
+// WORD_BANK. Local exact match is tried first (free, instant). Only when that fails do we ask
+// the AI whether the input is a genuinely valid English word/phrase for the target meaning —
+// this is what lets "foodstuffs" pass for "groceries" without registering it per word.
+// contextSentence (optional) is the cloze sentence, so the AI can judge fit within it.
+async function classifyEnglishAnswer(input, word, contextSentence) {
+  if (!input) return { verdict: "incorrect" };
+  if (containsJapanese(input)) return { verdict: "incorrect", note: "日本語ではなく英単語で入力しよう。" };
+  if (isEnglishAnswerCorrect(input, word)) return { verdict: "correct", natural: word.w };
+  const sample = await getSample();
+  if (!sample) return { verdict: "incorrect" };
+  try {
+    const res = await sample.json(buildEnglishJudgePrompt(word, input, contextSentence));
+    if (res && ["correct", "close", "incorrect"].includes(res.verdict)) {
+      return { verdict: res.verdict, natural: res.natural || word.w, note: res.note || "" };
+    }
+  } catch (e) { console.warn("english meaning judge failed", e); }
+  return { verdict: "incorrect" };
+}
+function buildEnglishJudgePrompt(word, input, contextSentence) {
+  return `You are grading a Japanese ESL runner's recall of an English word for a specific meaning, in a running/track & field/university context where relevant.
+
+Target meaning (Japanese): ${[word.jp, ...(word.alternatives || [])].join(" / ")}
+Registered reference answer: "${word.w}" (${word.pos || ""})
+${contextSentence ? `The word must fit naturally in this exact sentence (with the blank shown as ___): "${contextSentence}"` : `Typical usage: "${word.example.replace("___", word.w)}"`}
+
+The learner typed: "${input}"
+
+This is NOT a single-correct-answer lookup — genuine synonyms and natural alternative phrasings for the SAME meaning must be accepted. Judge holistically: synonyms, natural paraphrase, part of speech, singular/plural, context/register, and breadth of meaning. Classify into exactly one of:
+- "correct": a natural, accurate English word/phrase for this exact meaning — even if different from the reference answer (e.g. "foodstuffs" for "groceries").
+- "close": recognizable and in the right direction, but too broad/generic, wrong part of speech, an unnatural inflection (e.g. an odd singular/plural for this meaning), or otherwise not quite the expected term for this specific context.
+- "incorrect": wrong meaning, unrelated word, or doesn't fit the sentence/context at all.
+
+Also provide "natural": the single most natural, commonly-used English word or phrase for this exact meaning in this context — this may be the reference answer or a different valid synonym, but it must be genuinely natural (never suggest an awkward or unnatural inflection just because it's related).
+
+Reply with STRICT JSON only, no markdown fences:
+{"verdict": "correct" | "close" | "incorrect", "natural": "string", "note": "one short Japanese sentence explaining the verdict"}`;
+}
+
+// Japanese recall answer (en2jp): exact match against one of the registered meaning parts only.
+function normalizeJp(s) {
+  return (s || "").trim().replace(/[\s、,。.！!？?]/g, "");
+}
+// Exact-only check against a list of natural Japanese phrasings.
+function jpExactMatch(norm, list) {
+  return (list || []).map(normalizeJp).filter(Boolean).includes(norm);
+}
+// Fuzzy (substring, either direction) check — used only as a fallback, and only after
+// exact matches on BOTH sets have been ruled out, so a short "close" term that happens to be
+// a substring of the "correct" answer (e.g. 距離 inside 走行距離) can't be misread as fully correct.
+function jpFuzzyMatch(norm, list) {
+  return (list || []).map(normalizeJp).filter(Boolean).some(c =>
+    (c.includes(norm) || norm.includes(c)) && Math.min(c.length, norm.length) >= 2
+  );
+}
+// Local, deterministic 3-tier classification driven entirely by each word's own data
+// (jp = primary meaning, alternatives = other fully-correct phrasings, close = directionally
+// related but imprecise phrasings). Works identically for every word in WORD_BANK — nothing
+// here is hardcoded per word, so it applies automatically as the word list grows.
+function classifyJapaneseAnswerLocal(input, word) {
+  const norm = normalizeJp(input);
+  if (!norm) return "incorrect";
+  const correctList = [word.jp, ...(word.alternatives || [])];
+  const closeList = word.close || [];
+  if (jpExactMatch(norm, correctList)) return "correct";
+  if (jpExactMatch(norm, closeList)) return "close";
+  if (jpFuzzyMatch(norm, correctList)) return "correct";
+  if (jpFuzzyMatch(norm, closeList)) return "close";
+  return "incorrect";
+}
+// Full classification: try the local anchor match first (fast, free, fully deterministic).
+// Only when it finds NO match at all do we ask the AI to judge — and even then it's
+// constrained to choose between the word's own registered meanings, not judge freely.
+async function classifyJapaneseAnswer(input, word) {
+  const norm = normalizeJp(input);
+  if (!norm) return "incorrect";
+  const local = classifyJapaneseAnswerLocal(input, word);
+  if (local !== "incorrect") return local;
+  const sample = await getSample();
+  if (!sample) return "incorrect";
+  try {
+    const res = await sample.json(buildMeaningJudgePrompt(word, input));
+    if (res && ["correct", "close", "incorrect"].includes(res.verdict)) return res.verdict;
+  } catch (e) { console.warn("meaning judge failed", e); }
+  return "incorrect";
+}
+function buildMeaningJudgePrompt(word, input) {
+  return `You are grading a Japanese ESL learner's recall of the meaning of the English word "${word.w}" (${word.pos || ""}).
+Registered correct meanings: ${[word.jp, ...(word.alternatives || [])].join(" / ")}
+Registered "close but imprecise" meanings (right direction, not precise): ${(word.close || []).join(" / ") || "(none registered)"}
+Example usage: ${word.example.replace("___", word.w)}
+
+The learner typed this Japanese answer: "${input}"
+
+Classify it using ONLY these three buckets, anchored to the registered meanings above (don't invent a new standard):
+- "correct": accurately conveys the same meaning as one of the registered correct meanings, even if phrased differently.
+- "close": same general direction/domain/emotion as the word, but too vague, too broad, or imprecise to count as knowing the actual meaning — similar in spirit to the registered "close" examples.
+- "incorrect": wrong meaning, unrelated, or empty/nonsense.
+
+Reply with STRICT JSON only, no markdown fences: {"verdict": "correct" | "close" | "incorrect"}`;
+}
+
+// Deterministic "was the target word actually used" check for free-form sentences (produce type).
+// This is intentionally independent of any AI judgment — it's the hard gate the AI cannot override.
+function wordFormsFor(word) {
+  const forms = new Set();
+  const push = s => { if (s) forms.add(s.toLowerCase()); };
+  push(word.w);
+  push(word.w.replace(/-/g, " "));
+  push(word.w.replace(/-/g, ""));
+  push(word.w.replace(/ /g, ""));
+  (word.accepted || []).forEach(a => {
+    push(a); push(a.replace(/-/g, " ")); push(a.replace(/-/g, "")); push(a.replace(/ /g, ""));
+  });
+  return [...forms];
+}
+function containsTargetWord(sentence, word) {
+  if (!sentence) return false;
+  const norm = sentence.toLowerCase();
+  const isPhrase = /[\s-]/.test(word.w);
+  if (isPhrase) {
+    const collapsed = norm.replace(/[\s-]+/g, "");
+    return wordFormsFor(word).some(f => collapsed.includes(f.replace(/[\s-]+/g, "")));
+  }
+  const root = escapeRegExp(word.w.toLowerCase());
+  const re = new RegExp("\\b" + root + "(e?s|ing|e?d)?\\b", "i");
+  if (re.test(sentence)) return true;
+  return wordFormsFor(word).some(f => norm.includes(f));
+}
+
+/* ---- SRS ---- */
+// Vocabulary mistakes (jp2en / en2jp / cloze / produce). Deduplicates on the English word:
+// if this word already has an open SRS item, update it instead of creating a second one.
+function addSrsItem({ jp, en, type, mistakeType, importance }) {
+  const t = todayStr();
+  const key = normalizeWord(en);
+  const existing = state.srsItems.find(i => i.type === "vocab" && normalizeWord(i.en) === key && !i.mastered);
+  if (existing) {
+    existing.jp = jp || existing.jp;
+    existing.mistakeType = mistakeType || existing.mistakeType;
+    existing.importance = importance || existing.importance;
+    existing.intervalIndex = 0;
+    existing.dueDate = addDaysIso(t, SRS_LADDER[0]);
+    existing.incorrectCount = (existing.incorrectCount || 0) + 1;
+    existing.reviewCount = (existing.reviewCount || 0) + 1;
+    existing.lastReviewedAt = t;
+    saveState();
+    return existing;
+  }
+  const item = {
+    id: uid(), jp, en, type: "vocab",
+    mistakeType: mistakeType || "other",
+    importance: importance || "medium",
+    createdAt: t,
+    dueDate: addDaysIso(t, SRS_LADDER[0]),
+    intervalIndex: 0,
+    correctCount: 0, incorrectCount: 1, reviewCount: 0, lastReviewedAt: null,
+    lastQuestionType: null, questionTypeHistory: [], mastered: false
+  };
+  state.srsItems.push(item);
+  saveState();
+  return item;
+}
+
+// Conversation Expressions — a distinct kind from plain vocabulary: a reusable phrase (not a
+// single word), with its Japanese meaning, the user's original attempt, and the corrected/natural
+// form. Deduplicates on the normalized expression text so re-encountering the same expression
+// across sessions updates one item rather than creating duplicates.
+function addExpressionSrsItem({ expression, expressionJp, userOriginal, natural, category, importance, mistakeType }) {
+  if (!expression) return null;
+  const t = todayStr();
+  const key = normalizeWord(expression);
+  const existing = state.srsItems.find(i => i.type === "expression" && normalizeWord(i.expression || "") === key && !i.mastered);
+  if (existing) {
+    existing.natural = natural || existing.natural;
+    existing.userOriginal = userOriginal || existing.userOriginal;
+    existing.category = category || existing.category;
+    existing.importance = importance || existing.importance;
+    existing.mistakeType = mistakeType || existing.mistakeType;
+    existing.intervalIndex = 0;
+    existing.dueDate = addDaysIso(t, SRS_LADDER[0]);
+    existing.incorrectCount = (existing.incorrectCount || 0) + 1;
+    existing.reviewCount = (existing.reviewCount || 0) + 1;
+    existing.lastReviewedAt = t;
+    saveState();
+    return existing;
+  }
+  const item = {
+    id: uid(), type: "expression",
+    expression, jp: expressionJp || "", userOriginal: userOriginal || "", natural: natural || expression,
+    category: category || "", mistakeType: mistakeType || "phrasing",
+    importance: importance || "medium",
+    createdAt: t,
+    dueDate: addDaysIso(t, SRS_LADDER[0]),
+    intervalIndex: 0,
+    correctCount: 0, incorrectCount: 1, reviewCount: 0, lastReviewedAt: null,
+    lastQuestionType: null, questionTypeHistory: [], mastered: false
+  };
+  state.srsItems.push(item);
+  saveState();
+  return item;
+}
+
+// verdict: "correct" | "close" | "incorrect". Both "close" and "incorrect" count as not yet
+// mastered and reset the interval to day 1; only "correct" advances it. Completing a correct
+// review at the final (30-day) tier marks the item mastered, so it stops coming up in Review.
+function reviewSrsItem(item, verdict, questionType) {
+  const t = todayStr();
+  const wasAtFinalTier = item.intervalIndex >= SRS_LADDER.length - 1;
+  if (verdict === "correct") {
+    item.correctCount = (item.correctCount || 0) + 1;
+    if (wasAtFinalTier) {
+      item.mastered = true;
+    } else {
+      item.intervalIndex = Math.min(item.intervalIndex + 1, SRS_LADDER.length - 1);
+    }
+  } else {
+    item.incorrectCount = (item.incorrectCount || 0) + 1;
+    item.intervalIndex = 0;
+  }
+  item.dueDate = addDaysIso(t, SRS_LADDER[item.intervalIndex]);
+  item.reviewCount = (item.reviewCount || 0) + 1;
+  item.lastReviewedAt = t;
+  if (questionType) {
+    item.lastQuestionType = questionType;
+    item.questionTypeHistory = [...(item.questionTypeHistory || []), questionType].slice(-8);
+  }
+  saveState();
+}
+function dueTodayItems() {
+  const t = todayStr();
+  return state.srsItems.filter(i => !i.mastered && i.dueDate <= t);
+}
+// Priority order for review sessions: items answered wrong more often first, then higher
+// importance, then older items — so a large backlog doesn't dump everything at once.
+function prioritizeItems(items) {
+  return [...items].sort((a, b) => {
+    const ic = (b.incorrectCount || 0) - (a.incorrectCount || 0);
+    if (ic !== 0) return ic;
+    const rank = { high: 0, medium: 1, low: 2 };
+    const imp = (rank[a.importance] ?? 1) - (rank[b.importance] ?? 1);
+    if (imp !== 0) return imp;
+    return (a.createdAt || "").localeCompare(b.createdAt || "");
+  });
+}
+// Rotates the question format for a given item so the same expression/word isn't always
+// drilled the same way — picks a type different from the last one used, preferring one that
+// hasn't shown up recently in questionTypeHistory.
+function nextReviewType(item) {
+  const types = item.type === "expression"
+    ? ["jp2en", "cloze", "en2jp", "situation", "produce"]
+    : ["jp2en", "en2jp", "cloze", "produce"];
+  const candidates = types.filter(t => t !== item.lastQuestionType);
+  const recent = new Set((item.questionTypeHistory || []).slice(-2));
+  const fresh = candidates.filter(t => !recent.has(t));
+  const pool = fresh.length ? fresh : (candidates.length ? candidates : types);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/* ============ ROUTER ============ */
+let currentTab = "home";
+let vocabSession = null;
+let convoSession = null;
+let reviewSession = null;
+
+const main = document.getElementById("main");
+const tabbar = document.getElementById("tabbar");
+
+let testSession = null;
+
+function go(tab) {
+  currentTab = tab;
+  if (tab === "vocab") vocabSession = null;
+  if (tab === "conversation") convoSession = null;
+  if (tab === "review") reviewSession = null;
+  if (tab === "test") testSession = null;
+  render();
+}
+tabbar.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-tab]");
+  if (btn) go(btn.dataset.tab);
+});
+
+function render() {
+  document.getElementById("streakCount").textContent = state.streak;
+  [...tabbar.children].forEach(b => b.classList.toggle("active", b.dataset.tab === currentTab));
+  if (currentTab === "home") renderHome();
+  else if (currentTab === "vocab") renderVocab();
+  else if (currentTab === "conversation") renderConversation();
+  else if (currentTab === "review") renderReview();
+  else if (currentTab === "test") renderTest();
+  else if (currentTab === "diag") renderDiag();
+  window.scrollTo(0,0);
+}
+
+/* ---- HOME ---- */
+function renderHome() {
+  const d = state.todayDone;
+  const allDone = d.vocab && d.conversation && d.review;
+  const nextTab = !d.vocab ? "vocab" : !d.conversation ? "conversation" : !d.review ? "review" : "vocab";
+  const recoveryBanner = storageRecoveryNotice ? `
+    <div class="evalcard" id="recoveryBanner" style="border-color:var(--accent);">
+      <div class="row"><div class="k">⚠️ 復元</div><div>この端末の保存領域（localStorage）が空になっていたため、バックアップ（${storageRecoverySource || "IndexedDB"}）から学習データを復元しました。もし今後も繰り返す場合、ブラウザの「プライベートブラウジング」や「サイト間トラッキング防止」の設定がこのアプリの保存を制限している可能性があります。</div></div>
+      <button class="cta secondary" id="dismissRecovery" style="margin-top:10px;width:100%;">了解</button>
+    </div>
+  ` : "";
+  main.innerHTML = `
+    ${recoveryBanner}
+    <div class="hero">
+      <p class="greet">Etsu、おかえり 👋</p>
+      <p class="goal">5000mで<em>13分30秒</em><br>を切ろう。</p>
+      <p class="sub">1日15分でTorontoでの練習に備えよう。</p>
+    </div>
+
+    <div class="statgrid">
+      <div class="statcard"><div class="num">${state.vocabTotal ? Math.round(state.vocabCorrect/state.vocabTotal*100) : 0}%</div><div class="lbl">単語の正答率</div></div>
+      <div class="statcard"><div class="num">${dueTodayItems().length}</div><div class="lbl">本日の復習予定</div></div>
+    </div>
+
+    <div class="tasklist">
+      <div class="task ${d.vocab?'done':''}" data-go="vocab">
+        <div class="icon">🔤</div>
+        <div class="body"><div class="name">単語</div><div class="meta">5分・5問</div></div>
+        <div class="check">${d.vocab?'✓':''}</div>
+      </div>
+      <div class="task ${d.conversation?'done':''}" data-go="conversation">
+        <div class="icon">💬</div>
+        <div class="body"><div class="name">会話</div><div class="meta">7分・チームでの会話</div></div>
+        <div class="check">${d.conversation?'✓':''}</div>
+      </div>
+      <div class="task ${d.review?'done':''}" data-go="review">
+        <div class="icon">🔁</div>
+        <div class="body"><div class="name">復習</div><div class="meta">3分・本日${dueTodayItems().length}件</div></div>
+        <div class="check">${d.review?'✓':''}</div>
+      </div>
+    </div>
+
+    <button class="cta" id="startBtn">${allDone ? "今日はすべて完了しました 🎉" : "スタート"}</button>
+    <div style="text-align:center;margin-top:18px;"><a href="javascript:void(0)" id="diagLink" style="color:var(--muted);font-size:11.5px;text-decoration:underline;">保存データを確認（デバッグ）</a></div>
+  `;
+  main.querySelectorAll(".task").forEach(t => t.addEventListener("click", () => go(t.dataset.go)));
+  const startBtn = document.getElementById("startBtn");
+  if (!allDone) startBtn.addEventListener("click", () => go(nextTab));
+  else startBtn.disabled = true;
+  const dismissBtn = document.getElementById("dismissRecovery");
+  if (dismissBtn) dismissBtn.addEventListener("click", () => { storageRecoveryNotice = false; render(); });
+  document.getElementById("diagLink").addEventListener("click", () => go("diag"));
+}
+
+/* ---- DIAG (on-device storage diagnostic — not a real screen, reached only via the Home link) ---- */
+function summarizeState(st) {
+  if (!st) return "データなし（null）";
+  const td = st.todayDone || {};
+  return `todayDate: ${st.todayDate || "(なし)"} / todayDone: 単語=${!!td.vocab} 会話=${!!td.conversation} 復習=${!!td.review} / srsItems: ${st.srsItems ? st.srsItems.length : 0}件 / vocabTotal: ${st.vocabTotal || 0} / streak: ${st.streak || 0}`;
+}
+function renderDiag() {
+  let raw = null, rawErr = null;
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    raw = s ? JSON.parse(s) : null;
+  } catch (e) { rawErr = e.message; }
+
+  main.innerHTML = `
+    <div class="screen-head">
+      <div class="backbtn" id="backHome">←</div>
+      <div class="screen-title">保存データの確認<span class="sec">デバッグ用</span></div>
+    </div>
+    <div class="evalcard">
+      <div style="font-weight:700;color:var(--accent);">ビルド</div>
+      <div style="font-size:13px;margin:4px 0 10px;">${APP_BUILD}</div>
+      <div style="font-weight:700;color:var(--accent);">端末時刻</div>
+      <div style="font-size:13px;margin:4px 0 0;">${new Date().toString()}</div>
+    </div>
+    <div class="evalcard">
+      <div style="font-weight:700;color:var(--accent);">A. メモリ上の状態</div>
+      <div style="font-size:13px;margin-top:6px;line-height:1.6;">${summarizeState(state)}</div>
+    </div>
+    <div class="evalcard">
+      <div style="font-weight:700;color:var(--accent);">B. localStorage（今読み直した内容）</div>
+      <div style="font-size:13px;margin-top:6px;line-height:1.6;">${rawErr ? "パースエラー: " + rawErr : summarizeState(raw)}</div>
+    </div>
+    <div class="evalcard" id="idbRow">
+      <div style="font-weight:700;color:var(--accent);">C. IndexedDB（今読み直した内容）</div>
+      <div style="font-size:13px;margin-top:6px;line-height:1.6;" id="idbVal">読み込み中…</div>
+    </div>
+    <div class="evalcard" id="dbRow" style="border-color:var(--good);">
+      <div style="font-weight:700;color:var(--good);">D. サーバー（アカウント紐付け）</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">ブラウザの保存領域とは無関係</div>
+      <div style="font-size:13px;margin-top:6px;line-height:1.6;" id="dbVal">読み込み中…</div>
+    </div>
+    <div class="evalcard">
+      <div style="font-weight:700;color:var(--accent);">今回の起動で復元処理が動いたか</div>
+      <div style="font-size:13px;margin-top:6px;">${storageRecoveryNotice ? `はい（${storageRecoverySource || "IndexedDB"}から復元しました）` : "いいえ"}</div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:8px 8px 18px;line-height:1.6;">
+      このビルド番号（${APP_BUILD}）が最新のものと違う場合、ホーム画面のアイコンが古いキャッシュを開いている可能性があります。<br>
+      A・B・C・Dの todayDone がすべて false なのに、直前で単語に✓が付いていた場合 → 保存自体が失われています。<br>
+      B・Cは消えていても、Dに todayDone: 単語=true が残っていれば → ブラウザのストレージ制約が原因で、サーバー側のバックアップは機能しています（次回起動時に自動復元されるはずです）。<br>
+      Dが「未対応」の場合 → このページを開いた時にClaudeアカウントにサインインしていないと、このバックアップは動きません。
+    </p>
+  `;
+  document.getElementById("backHome").addEventListener("click", () => go("home"));
+  idbLoadState(idbRaw => {
+    if (currentTab !== "diag") return;
+    const el = document.getElementById("idbVal");
+    if (!el) return;
+    if (!idbRaw) { el.textContent = "データなし（null）"; return; }
+    try { el.textContent = summarizeState(JSON.parse(idbRaw)); }
+    catch (e) { el.textContent = "パースエラー: " + e.message; }
+  });
+  (async () => {
+    await dbInit();
+    const el = document.getElementById("dbVal");
+    if (!el || currentTab !== "diag") return;
+    if (!__dbReady) { el.textContent = "未対応（サインインしていない可能性、またはこのビューでは利用不可）"; return; }
+    const dbState = await dbLoadState();
+    if (currentTab !== "diag") return;
+    el.textContent = dbState ? summarizeState(dbState) : "データなし（null）";
+  })();
+}
+
+/* ---- VOCAB ---- */
+function buildVocabItems(n, typePool) {
+  n = n || 5;
+  const picked = pick(WORD_BANK, Math.min(n, WORD_BANK.length));
+  return picked.map(w => {
+    let type;
+    if (typePool) {
+      type = typePool[Math.floor(Math.random() * typePool.length)];
+    } else {
+      const r = Math.random();
+      if (r < 0.30) type = "jp2en";
+      else if (r < 0.50) type = "en2jp";
+      else if (r < 0.75) type = "cloze";
+      else if (r < 0.90) type = "produce";
+      else type = "mcq";
+    }
+    const item = { word: w, type };
+    if (type === "mcq") {
+      item.options = shuffle([w.jp, ...w.distractors]);
+    }
+    return item;
+  });
+}
+
+function renderVocab() {
+  if (!vocabSession) {
+    vocabSession = {
+      items: buildVocabItems(), idx: 0, correctCount: 0,
+      answered: false, revealed: false, busy: false, evalResult: null, finished: false
+    };
+  }
+  const s = vocabSession;
+
+  if (s.finished) {
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backHome">←</div>
+        <div class="screen-title">単語<span class="sec">セッション完了</span></div>
+      </div>
+      <div class="resultcard">
+        <div class="score">${s.correctCount}/${s.items.length}</div>
+        <p class="msg">${s.correctCount===s.items.length ? "満点！ナイス。" : "間違えた単語は復習に保存されました。"}</p>
+        <button class="cta" id="toHomeBtn">ホームに戻る</button>
+      </div>`;
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+    document.getElementById("toHomeBtn").addEventListener("click", () => go("home"));
+    return;
+  }
+
+  const it = s.items[s.idx];
+  const w = it.word;
+  const catTag = w.category ? `<div class="cat">${w.category}</div>` : "";
+
+  const head = `
+    <div class="screen-head">
+      <div class="backbtn" id="backHome">←</div>
+      <div class="screen-title">単語<span class="sec">問題 ${s.idx+1} / ${s.items.length}</span></div>
+    </div>
+    <div class="progressbar"><div style="width:${(s.idx/s.items.length)*100}%"></div></div>
+  `;
+
+  if (it.type === "mcq") {
+    main.innerHTML = head + `
+      <div class="qword">
+        <div class="w">${w.w}</div>
+        <div class="hint">この単語の意味は？</div>
+      </div>
+      <div class="options" id="opts">
+        ${it.options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join("")}
+      </div>`;
+    bindBack();
+    main.querySelectorAll(".opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (s.answered) return;
+        s.answered = true;
+        const isCorrect = btn.dataset.val === w.jp;
+        main.querySelectorAll(".opt").forEach(b => {
+          b.disabled = true;
+          if (b.dataset.val === w.jp) b.classList.add("correct");
+          else if (b === btn) b.classList.add("wrong");
+        });
+        gradeAndContinue(isCorrect ? "correct" : "incorrect", 800);
+      });
+    });
+    return;
+  }
+
+  if (it.type === "jp2en" || it.type === "en2jp" || it.type === "cloze") {
+    const prompt = it.type === "jp2en" ? w.jp
+      : it.type === "en2jp" ? w.w
+      : w.example.replace("___", "＿＿＿");
+    const hint = it.type === "jp2en" ? "この意味の英単語を入力しよう"
+      : it.type === "en2jp" ? "日本語の意味を入力しよう"
+      : "空欄に入る単語を入力しよう";
+    const placeholder = it.type === "en2jp" ? "日本語で入力…" : "英語で入力…";
+    // Bebas Neue is a thin, all-caps display font — fine for a single short English word (en2jp),
+    // but hard to read for a full sentence (cloze) or Japanese text (jp2en, which it can't even
+    // render), so those two switch to bold Inter instead.
+    const wordStyle = it.type === "en2jp"
+      ? "font-family:'Bebas Neue','Inter',sans-serif;font-size:36px;"
+      : it.type === "cloze"
+        ? "font-family:'Inter',sans-serif;font-weight:700;font-size:19px;line-height:1.5;"
+        : "font-family:'Inter',sans-serif;font-weight:700;font-size:28px;line-height:1.3;";
+    main.innerHTML = head + `
+      <div class="qword">
+        <div class="w" style="${wordStyle}">${prompt}</div>
+        <div class="hint">${hint}</div>
+        ${catTag}
+      </div>
+      <input class="answer" id="vocabInput" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
+      ${s.revealed ? "" : `<button class="cta" id="vocabCheck" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
+      ${s.revealed ? renderRecallFeedback(it, w, s) : ""}
+      ${s.revealed ? `<button class="cta" id="vocabNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
+    `;
+    bindBack();
+    if (!s.revealed) {
+      const check = document.getElementById("vocabCheck");
+      const inputEl = document.getElementById("vocabInput");
+      if (!s.checking) inputEl.focus();
+      const doCheck = async () => {
+        const val = inputEl.value.trim();
+        if (!val || s.checking) return;
+        s.lastInput = val;
+        s.checking = true;
+        render();
+        if (it.type === "en2jp") {
+          s.lastVerdict = await classifyJapaneseAnswer(val, w);
+          s.lastNatural = null;
+          s.lastNote = null;
+        } else {
+          const contextSentence = it.type === "cloze" ? w.example.replace("___", "____") : null;
+          const res = await classifyEnglishAnswer(val, w, contextSentence);
+          s.lastVerdict = res.verdict;
+          s.lastNatural = res.natural || null;
+          s.lastNote = res.note || null;
+        }
+        s.checking = false;
+        s.revealed = true;
+        render();
+      };
+      check.addEventListener("click", doCheck);
+      inputEl.addEventListener("keydown", e => { if (e.key === "Enter") doCheck(); });
+    } else {
+      document.getElementById("vocabNext").addEventListener("click", () => {
+        gradeAndContinue(s.lastVerdict, 0);
+      });
+    }
+    return;
+  }
+
+  if (it.type === "produce") {
+    main.innerHTML = head + `
+      <div class="qword">
+        <div class="w">${w.w}</div>
+        <div class="hint">${w.jp}${w.category ? " · " + w.category : ""}</div>
+      </div>
+      <textarea class="answer" id="vocabSentence" placeholder="この単語を使って短い英文を作ってみよう" ${s.busy ? "disabled" : ""}>${s.draftText || ""}</textarea>
+      ${s.evalResult ? "" : `<button class="cta" id="vocabProduceCheck" ${s.busy ? "disabled" : ""} style="width:100%;">${s.busy ? "確認中…" : "添削してもらう"}</button>`}
+      <div id="produceEvalArea"></div>
+      ${s.evalResult ? `<button class="cta" id="vocabNext" style="width:100%;margin-top:6px;">次へ</button>` : ""}
+    `;
+    bindBack();
+    if (s.evalResult) {
+      const r = s.evalResult;
+      const passed = r.wordUsed && r.grammarCorrect;
+      let feedbackHtml;
+      if (!r.wordUsed) {
+        // Deterministic rejection: word wasn't found in the sentence — no AI leniency involved.
+        feedbackHtml = `
+          <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
+            <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
+            <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.draftText || "（空欄）")}</div>
+            <div style="margin:2px 0;"><b>正解：</b> 「${w.w}」を使った英文（例：${w.example.replace("___", w.w)}）</div>
+            <div style="margin:2px 0;"><b>より自然な表現：</b> ${w.example.replace("___", w.w)}</div>
+            <div style="margin:2px 0;"><b>ポイント：</b> 「${w.w}」という単語が文中で使われていません。</div>
+          </div>`;
+      } else {
+        feedbackHtml = `
+          <div style="margin:10px 0;font-size:13px;color:var(--good);font-weight:600;">✅ 「${w.w}」を使えています。</div>
+        ` + renderEvalCard(r) + (passed ? "" : `
+          <div style="margin-top:8px;font-size:12.5px;color:var(--muted);">※ 単語の使用と文法は正しいので正解扱いですが、より自然な表現もあわせて確認しよう。</div>
+        `);
+        if (!r.grammarCorrect) {
+          feedbackHtml = `
+            <div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ 不正解（文法エラーあり）</div>
+          ` + renderEvalCard(r);
+        }
+      }
+      document.getElementById("produceEvalArea").innerHTML = feedbackHtml;
+      document.getElementById("vocabNext").addEventListener("click", () => {
+        gradeAndContinue(passed, 0);
+      });
+    } else {
+      const ta = document.getElementById("vocabSentence");
+      ta.addEventListener("input", () => { s.draftText = ta.value; });
+      document.getElementById("vocabProduceCheck").addEventListener("click", async () => {
+        const text = ta.value.trim();
+        if (!text || s.busy) return;
+        s.busy = true;
+        s.draftText = text;
+        render();
+
+        // Deterministic gate FIRST: correctness is never decided by the AI's semantic judgment.
+        const localWordUsed = containsTargetWord(text, w);
+        let result;
+        if (!localWordUsed) {
+          result = {
+            wordUsed: false, grammarCorrect: true, grammarNote: "", naturalness: "natural", naturalNote: "",
+            better: w.example.replace("___", w.w), betterIsCorrection: false, points: [],
+            issueFound: true, issueCategory: "word-usage", mistakeType: "word-usage", importance: "medium",
+            reviewPromptJp: w.jp
+          };
+        } else {
+          const sample = await getSample();
+          if (!sample) {
+            result = fallbackVocabEval(w, text);
+          } else {
+            try { result = await sample.json(buildVocabProducePrompt(w, text)); }
+            catch (e) { console.warn("vocab sample failed", e); result = fallbackVocabEval(w, text); }
+          }
+          result.wordUsed = true; // deterministic check already confirmed this — don't let the AI flip it
+        }
+        s.busy = false;
+        s.evalResult = result;
+        if (result.issueFound) {
+          addSrsItem({
+            jp: result.reviewPromptJp || w.jp,
+            en: result.better || text,
+            type: "vocab",
+            mistakeType: result.mistakeType || "phrasing",
+            importance: result.importance || "medium"
+          });
+        }
+        render();
+      });
+    }
+    return;
+  }
+
+  function bindBack() {
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+  }
+
+  // verdict: "correct" | "close" | "incorrect" (produce type passes a boolean for backward compat)
+  function gradeAndContinue(verdict, delay) {
+    const isCorrect = verdict === "correct" || verdict === true;
+    state.vocabTotal += 1;
+    if (isCorrect) {
+      s.correctCount += 1; state.vocabCorrect += 1;
+    } else if (it.type !== "produce") {
+      // "close" (△) and "incorrect" (❌) are both treated as not-yet-mastered for SRS purposes.
+      addSrsItem({ jp: w.jp, en: w.w, type: "vocab", mistakeType: it.type, importance: verdict === "close" ? "low" : "medium" });
+    }
+    saveState();
+    setTimeout(() => {
+      s.idx += 1;
+      s.answered = false;
+      s.revealed = false;
+      s.checking = false;
+      s.lastNatural = null;
+      s.lastNote = null;
+      s.evalResult = null;
+      s.draftText = "";
+      s.busy = false;
+      if (s.idx >= s.items.length) {
+        s.finished = true;
+        markDoneToday("vocab");
+      }
+      render();
+    }, delay);
+  }
+}
+
+// Builds the instruction for a vocab "make your own sentence" check — reuses the same JSON shape as the conversation coach.
+function buildVocabProducePrompt(word, sentence) {
+  return `You are an English coach for Etsu, a Japanese university runner (5000m PB 14:11, goal 13:30) preparing to train with a university team in Canada (like UTTC). He studies English 15 min/day, upper-beginner to intermediate ESL.
+
+Target vocabulary word: "${word.w}" (${word.jp}), typically used in a ${word.category || "running"} context.
+Etsu wrote this sentence trying to use the word naturally: "${sentence}"
+
+First check whether the sentence actually uses "${word.w}" or a natural inflected form of it (plural, -ing, -ed, etc.). Then evaluate grammar and naturalness as SEPARATE, NON-OVERLAPPING dimensions — a grammatically valid sentence is NOT a grammar error just because a more idiomatic phrasing exists. Two independent clauses fused with no period/conjunction (a run-on) IS a real grammar issue, not a stylistic nitpick. Treat standard SPOKEN running/track & field terminology (e.g. "pace run", "tempo run", "PB", "splits", "reps") as normal and correct — but raw numeral shorthand written inline as if it were a sentence (e.g. "1000*5", "5x1000") is NEVER natural on its own, even in this context; it must be spelled out in words for "better" (e.g. "five 1,000-meter intervals"). If naturalness is not "natural", "better" MUST be substantively different from the original — never echo it unchanged.
+
+Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
+{
+ "wordUsed": boolean (true only if the target word or a natural inflected form actually appears, used with roughly the right meaning),
+ "grammarCorrect": boolean,
+ "grammarNote": "if grammarCorrect is false, max 10-word note on the actual grammar error; else empty string",
+ "naturalness": "one of: natural | more_natural_available | unnatural",
+ "naturalNote": "max 10-word note from a native runner's perspective; empty string if already natural",
+ "better": "a natural native-speaker version of the sentence, still using the target word",
+ "betterIsCorrection": boolean (true only if fixing a real grammar error),
+ "points": ["at most 2 short Japanese notes, one sentence each"],
+ "issueFound": boolean (true if there is a real grammar error, the word wasn't used, or a naturalness point worth reviewing),
+ "issueCategory": "one of: grammar | naturalness | word-usage | none",
+ "mistakeType": "one of: tense, preposition, article, word-choice, word-order, phrasing, word-usage, other",
+ "importance": "one of: high, medium, low",
+ "reviewPromptJp": "a short Japanese sentence Etsu could translate back to English later to drill this exact word/fix"
+}
+Keep all English fields short.`;
+}
+
+// Offline fallback if the sample capability is unavailable.
+function fallbackVocabEval(word, sentence) {
+  const norm = normalizeWord(sentence);
+  const root = normalizeWord(word.w).slice(0, Math.min(4, normalizeWord(word.w).length));
+  const wordUsed = root.length > 0 && norm.includes(root);
+  const hasCapital = /^[A-Z]/.test(sentence.trim());
+  const hasPunct = /[.!?]$/.test(sentence.trim());
+  const grammarIssue = !hasCapital || !hasPunct;
+  return {
+    wordUsed,
+    grammarCorrect: !grammarIssue,
+    grammarNote: grammarIssue ? "文の始まりと終わりを確認しよう" : "",
+    naturalness: grammarIssue ? "unnatural" : "natural",
+    naturalNote: "",
+    better: sentence,
+    betterIsCorrection: grammarIssue,
+    points: !wordUsed ? [`「${word.w}」を使ってみよう。`] : (grammarIssue ? ["大文字と句読点を確認しよう。"] : []),
+    issueFound: !wordUsed || grammarIssue,
+    issueCategory: !wordUsed ? "word-usage" : (grammarIssue ? "grammar" : "none"),
+    mistakeType: !wordUsed ? "word-usage" : "other",
+    importance: "low",
+    reviewPromptJp: word.jp
+  };
+}
+
+/* ---- CONVERSATION (AI coach via sample capability) ---- */
+// Talks to our own Netlify function (netlify/functions/ask.js), which holds the real Anthropic
+// API key server-side and never exposes it to the browser. Same .json(prompt) interface as
+// before, so every call site elsewhere in this file needs no change at all.
+function getSample() {
+  return Promise.resolve({
+    json: async (prompt) => {
+      const res = await fetch("/.netlify/functions/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error("AI request failed (" + res.status + "): " + text);
+      }
+      return await res.json();
+    }
+  });
+}
+
+function renderConversation() {
+  if (!convoSession) {
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backHome">←</div>
+        <div class="screen-title">会話<span class="sec">テーマを選ぶ</span></div>
+      </div>
+      <div class="themegrid">
+        ${CONVERSATIONS.map(c => `
+          <div class="themebtn" data-id="${c.id}">
+            <div>
+              ${c.title}
+              <div class="jp">${c.jp}</div>
+            </div>
+            <div class="arrow">→</div>
+          </div>`).join("")}
+      </div>
+    `;
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+    main.querySelectorAll(".themebtn").forEach(el => {
+      el.addEventListener("click", () => {
+        const convo = CONVERSATIONS.find(c => c.id === el.dataset.id);
+        convoSession = {
+          convo,
+          thread: [{ from: "npc", who: convo.who, text: convo.prompt }],
+          turn: 0,
+          targetTurns: 3 + Math.floor(Math.random() * 3), // 3–5 turns
+          loggedItems: [],
+          busy: false,
+          finished: false
+        };
+        renderConversation();
+      });
+    });
+    return;
+  }
+
+  const s = convoSession;
+
+  if (s.finished) {
+    renderConvoSummary(s);
+    return;
+  }
+
+  main.innerHTML = `
+    <div class="screen-head">
+      <div class="backbtn" id="backList">←</div>
+      <div class="screen-title">会話<span class="sec">${s.convo.jp} · ターン ${s.turn + 1} / ${s.targetTurns}</span></div>
+    </div>
+    <div id="thread"></div>
+    <textarea class="answer" id="userAns" placeholder="英語で返信してください…" ${s.busy ? "disabled" : ""}></textarea>
+    <button class="cta" id="submitAns" ${s.busy ? "disabled" : ""} style="width:100%;">${s.busy ? "確認中…" : "送信"}</button>
+  `;
+  document.getElementById("backList").addEventListener("click", () => { convoSession = null; renderConversation(); });
+
+  const threadEl = document.getElementById("thread");
+  s.thread.forEach(item => {
+    if (item.from === "npc") {
+      threadEl.insertAdjacentHTML("beforeend", `
+        <div class="bubble npc"><div class="who">${item.who}</div>${item.text}</div>`);
+    } else if (item.from === "me") {
+      threadEl.insertAdjacentHTML("beforeend", `
+        <div class="bubble me"><div class="who">You</div>${escapeHtml(item.text)}</div>`);
+    } else if (item.from === "eval") {
+      threadEl.insertAdjacentHTML("beforeend", renderEvalCard(item.data));
+    }
+  });
+  threadEl.scrollIntoView({ block: "end" });
+
+  document.getElementById("submitAns").addEventListener("click", () => handleSend());
+  document.getElementById("userAns").focus();
+
+  async function handleSend() {
+    const ta = document.getElementById("userAns");
+    const text = ta.value.trim();
+    if (!text || s.busy) return;
+    s.busy = true;
+    s.thread.push({ from: "me", text });
+    const isFinalTurn = (s.turn + 1) >= s.targetTurns;
+    renderConversation();
+    document.getElementById("thread").insertAdjacentHTML("beforeend", `<div class="bubble npc thinking" id="thinkingBubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`);
+
+    const sample = await getSample();
+    let result;
+    if (!sample) {
+      result = fallbackEval(text, s.convo, isFinalTurn);
+    } else {
+      try {
+        result = await sample.json(buildCoachPrompt(s.convo, s.thread, text, isFinalTurn));
+      } catch (e) {
+        console.warn("sample call failed", e);
+        result = fallbackEval(text, s.convo, isFinalTurn);
+      }
+    }
+    const think = document.getElementById("thinkingBubble");
+    if (think) think.remove();
+
+    s.thread.push({ from: "eval", data: result });
+    if (result.coachNext) {
+      s.thread.push({ from: "npc", who: s.convo.who, text: result.coachNext });
+    }
+    if (result.issueFound) {
+      s.loggedItems.push({
+        point: (result.points && result.points[0]) || "",
+        better: result.better || "",
+        mistakeType: result.mistakeType || "other",
+        importance: result.importance || "medium",
+        category: result.issueCategory || (result.grammarCorrect === false ? "grammar" : "naturalness"),
+        expression: result.expression || "",
+        expressionJp: result.expressionJp || "",
+        userOriginal: text,
+        reviewPromptJp: result.reviewPromptJp || s.convo.jp
+      });
+    }
+    s.turn += 1;
+    s.busy = false;
+    if (isFinalTurn) {
+      s.finished = true;
+      commitConversationExpressions(s);
+      markDoneToday("conversation"); // fires as soon as the session is actually complete
+    }
+    renderConversation();
+  }
+}
+
+// Called once, at the end of a session: picks at most the top 2-3 issues by importance
+// (skipping low-importance/trivial ones and anything with no extractable reusable expression)
+// and registers ONLY those as Conversation Expression SRS items — not every single correction.
+function commitConversationExpressions(s) {
+  const rank = { high: 0, medium: 1, low: 2 };
+  const candidates = s.loggedItems
+    .filter(it => it.expression && it.importance !== "low")
+    .sort((a, b) => (rank[a.importance] ?? 1) - (rank[b.importance] ?? 1));
+  const chosen = candidates.slice(0, 3);
+  chosen.forEach(it => {
+    addExpressionSrsItem({
+      expression: it.expression,
+      expressionJp: it.expressionJp || it.reviewPromptJp,
+      userOriginal: it.userOriginal,
+      natural: it.better,
+      category: s.convo.category || s.convo.title,
+      importance: it.importance,
+      mistakeType: it.mistakeType
+    });
+    it.saved = true;
+  });
+}
+
+function renderConvoSummary(s) {
+  const items = s.loggedItems;
+  main.innerHTML = `
+    <div class="screen-head">
+      <div class="backbtn" id="backHome">←</div>
+      <div class="screen-title">会話<span class="sec">セッションのまとめ</span></div>
+    </div>
+    <div class="hero" style="padding:20px;">
+      <p class="greet">${s.convo.jp} · ${s.turn}ターン</p>
+      <p class="goal" style="font-size:26px;">セッション終了。</p>
+    </div>
+    ${items.length === 0 ? `
+      <div class="empty"><div class="big">🎯</div>大きなミスはありませんでした。</div>
+    ` : `
+      <div class="evalcard">
+        <div class="row"><div class="k">今日の気づき</div><div>${items.length} 件（Expressionとして保存：${items.filter(i=>i.saved).length}件）</div></div>
+      </div>
+      ${items.map(it => `
+        <div class="evalcard">
+          <div class="row"><div class="k">ポイント</div><div>${it.point}<span class="pill ${it.category === 'grammar' ? 'issue' : 'medium'}">${it.category === 'grammar' ? '文法' : '自然さ'}</span><span class="pill ${it.importance}">${it.importance}</span>${it.saved ? '<span class="pill ok">保存済み</span>' : ''}</div></div>
+          <div class="row better"><div class="k">より自然な英語</div><div>${it.better}</div></div>
+        </div>`).join("")}
+      <p style="font-size:13px;color:var(--muted);margin:4px 4px 18px;">重要度の高いものだけがExpressionとして復習キューに追加されます（1日後に再登場）。</p>
+    `}
+    <button class="cta" id="finishConvo" style="width:100%;">ホームに戻る</button>
+  `;
+  document.getElementById("backHome").addEventListener("click", () => go("home"));
+  document.getElementById("finishConvo").addEventListener("click", () => {
+    markDoneToday("conversation");
+    convoSession = null;
+    go("home");
+  });
+}
+
+function renderRecallFeedback(it, w, s) {
+  const verdict = s.lastVerdict;
+
+  if (it.type === "en2jp") {
+    const correctAnswer = w.jp;
+    const altText = (w.alternatives && w.alternatives.length) ? w.alternatives.join(" / ") : "—";
+    if (verdict === "correct") {
+      return `
+        <div class="correctbox">
+          <div class="lbl">✅ 正解</div>${correctAnswer}
+        </div>`;
+    }
+    if (verdict === "close") {
+      return `
+        <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
+          <div class="lbl" style="color:var(--accent);">△ 惜しい</div>
+          <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "（空欄）")}</div>
+          <div style="margin:2px 0;"><b>正確な意味：</b> ${correctAnswer}</div>
+          <div style="margin:2px 0;"><b>より自然な表現：</b> ${altText}</div>
+          <div style="margin:2px 0;"><b>ポイント：</b> 方向性は合っているが、正確な意味とはズレがある。「${correctAnswer}」で覚え直そう。</div>
+        </div>`;
+    }
+    return `
+      <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
+        <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
+        <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "（空欄）")}</div>
+        <div style="margin:2px 0;"><b>正解：</b> ${correctAnswer}</div>
+        <div style="margin:2px 0;"><b>より自然な表現：</b> ${altText}</div>
+        <div style="margin:2px 0;"><b>ポイント：</b> 日本語の意味を正確に思い出そう。</div>
+      </div>`;
+  }
+
+  // jp2en / cloze: semantic classification, so the "correct" bucket may cover valid synonyms
+  // the registered answer/accepted list doesn't literally contain (e.g. "foodstuffs" for groceries).
+  const referenceAnswer = w.w;
+  const natural = s.lastNatural || referenceAnswer;
+  const showNatural = normalizeWord(natural) !== normalizeWord(s.lastInput || "");
+
+  if (verdict === "correct") {
+    return `
+      <div class="correctbox">
+        <div class="lbl">✅ 正解</div>
+        「${escapeHtml(s.lastInput || "")}」は意味として正しいです。
+        ${showNatural ? `<div style="margin-top:6px;"><b>より自然・一般的な表現：</b> ${natural}</div>` : ""}
+      </div>`;
+  }
+  if (verdict === "close") {
+    return `
+      <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
+        <div class="lbl" style="color:var(--accent);">△ 惜しい</div>
+        <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "（空欄）")}</div>
+        <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
+        <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "意味は近いが、この文脈での代表的な表現としては少しずれている。"}</div>
+      </div>`;
+  }
+  return `
+    <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
+      <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
+      <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "（空欄）")}</div>
+      <div style="margin:2px 0;"><b>正解例：</b> ${referenceAnswer}</div>
+      <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
+      <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || (w.accepted && w.accepted.length ? `スペルを確認しよう（${w.accepted.join(" / ")} も可）。` : "スペルを確認しよう。")}</div>
+    </div>`;
+}
+
+function renderEvalCard(d) {
+  const grammarPill = d.grammarCorrect
+    ? `<span class="pill ok">文法OK</span>`
+    : `<span class="pill issue">文法ミス</span>`;
+  const naturalPill = d.naturalness === "natural"
+    ? `<span class="pill ok">自然</span>`
+    : d.naturalness === "unnatural"
+      ? `<span class="pill issue">不自然</span>`
+      : `<span class="pill medium">より自然な表現あり</span>`;
+  return `
+    <div class="evalcard">
+      <div class="row"><div class="k">文法</div><div>${d.grammarNote || (d.grammarCorrect ? "文法的な誤りはありません。" : "")}${grammarPill}</div></div>
+      <div class="row"><div class="k">自然さ</div><div>${d.naturalNote || ""}${naturalPill}</div></div>
+      <div class="row better"><div class="k">より自然な英語</div><div>${d.better || ""}</div></div>
+      ${(d.points && d.points.length) ? `<div class="row point"><div class="k">ポイント</div><div>${d.points.join(" / ")}</div></div>` : ""}
+    </div>`;
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+// Builds the instruction sent to sample.json — asks for a compact JSON coaching object.
+function buildCoachPrompt(convo, thread, latestReply, isFinalTurn) {
+  const history = thread
+    .filter(t => t.from === "npc" || t.from === "me")
+    .map(t => (t.from === "npc" ? "Coach/Teammate: " + t.text : "Etsu: " + t.text))
+    .join("\n");
+  return `You are an English conversation coach roleplaying as a teammate/coach for Etsu, a Japanese university runner (5000m PB 14:11, goal 13:30) about to train with a university running team in Canada (like UTTC). He studies English 15 min/day. His level is upper-beginner to intermediate ESL.
+
+Scenario category: ${convo.category || convo.title} (${convo.jp}).
+Conversation so far:
+${history}
+
+Etsu's latest reply to evaluate: "${latestReply}"
+
+Evaluate ONLY Etsu's latest reply, following this priority order:
+1. PRESERVE MEANING — the corrected sentence must express exactly, and only, the information Etsu actually stated. Never add distances, paces, times, feelings/opinions ("it was hard"), training details, or any other fact he did not say. Never guess or invent specifics he left out.
+2. Fix grammar — tense, articles, prepositions, word order, agreement, AND sentence boundaries (see run-on rule below).
+3. Fix unnatural word choice / collocations — e.g. "trained 1000×5 of intervals" is grammatically parseable but is not how a native runner phrases it; the fix is a natural collocation for the SAME content ("did five 1,000-meter intervals"), not a different sentence.
+4. Offer a more natural native-runner phrasing, still carrying only Etsu's original content.
+5. If the conversation would naturally want more detail (how it felt, the pace, etc.), do NOT invent it — ask for it in "coachNext" instead.
+
+You MUST evaluate grammar and naturalness as two SEPARATE, NON-OVERLAPPING dimensions — do not call something a grammar mistake just because a more idiomatic phrasing exists, and do not treat "grammar" as only capitalization/punctuation.
+
+- Grammar = is the sentence grammatically well-formed (tense, articles, prepositions, word order, agreement, sentence boundaries)? If it is grammatically valid — even if the wording or collocation is awkward — grammarCorrect MUST be true.
+- RUN-ON RULE: if Etsu writes two independent clauses with no period/conjunction/semicolon between them (e.g. "...intervals It was very hard" — two complete sentences fused with no break), this IS a real grammar problem, not a stylistic nitpick — grammarCorrect: false, mistakeType: "phrasing" or "other", grammarNote explaining a sentence break is needed. This is different from trivial capitalization-only issues, which still do not count as grammar errors on their own.
+- Naturalness = independent of grammar, and this is where awkward collocations / word choice belong (e.g. "trained 1000×5 of intervals" → grammarCorrect: true, naturalness: "more_natural_available", NOT a grammar error).
+- NUMERIC SHORTHAND RULE: training-log shorthand written inline as if it were spoken English — e.g. "1000*5", "5x1000", "3x1km" — is NEVER "natural" on its own, even in a running/track & field context, no matter how standard it is as a coach's written note. It must always get naturalness: "more_natural_available" (or "unnatural"), with "better" spelling it out in words a runner would actually SAY out loud (e.g. "five 1,000-meter intervals", "three one-kilometer reps"). Do not confuse this with genuine spoken running vocabulary/idioms (e.g. "pace run", "tempo run", "PB", "splits", "reps", "easy day", "long run", "threshold", "warm-up", "cool-down"), which ARE natural as-is — the rule applies specifically to raw numeral+operator notation, not to running terminology itself.
+- Running / track & field context matters. For ANY running/training expression Etsu uses, decide which of these three cases applies, and never collapse them into one verdict:
+  1. Grammatically wrong (e.g. missing article, wrong tense, a run-on per the rule above) → grammarCorrect: false.
+  2. Grammatically fine AND standard, accepted SPOKEN terminology in a running/track & field context (see the list above) → grammarCorrect: true, naturalness: "natural". Do NOT suggest a "better" alternative just because it differs from everyday non-running English — this is correct as-is.
+  3. Grammatically fine but phrased in an unnatural or overly literal way (including awkward collocations and numeric shorthand) → grammarCorrect: true, naturalness: "more_natural_available", with a genuinely more idiomatic suggestion in "better" that preserves the exact same content.
+- HARD RULE: if naturalness is "more_natural_available" or "unnatural", "better" MUST be a substantively rewritten sentence — it must NOT equal, or nearly equal, Etsu's original wording. Returning the original unchanged is only allowed when naturalness is "natural".
+- Avoid absolute claims like "a native would never say this" — frame naturalness notes as "in this running context, X is more natural" or "runners more commonly say X here", not as a hard rule of English.
+
+Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
+{
+ "grammarCorrect": boolean,
+ "grammarNote": "if grammarCorrect is false, max 10-word note on the actual grammar error (e.g. missing article, wrong tense). If grammarCorrect is true, leave this empty string.",
+ "naturalness": "one of: natural | more_natural_available | unnatural",
+ "naturalNote": "max 10-word note from a native runner's perspective, describing the actual issue (e.g. 'awkward collocation, not how natives phrase reps') — empty string if naturalness is 'natural'",
+ "meaningClear": boolean,
+ "better": "a natural native-speaker phrasing of EXACTLY what Etsu said — same facts, same content, nothing added and nothing removed. If grammarCorrect is true and naturalness is 'natural', this can equal or lightly polish the original.",
+ "betterIsCorrection": boolean (true only if this fixes an actual grammar error; false if it's just a more natural/idiomatic alternative to an already-correct sentence),
+ "points": ["at most 3 short Japanese notes, each ONE short sentence, each clearly a grammar note or a naturalness note — do not mix them into one line"],
+ "issueFound": boolean (true if there is a real grammar error OR a naturalness alternative worth logging for review; false if the sentence is both grammatically correct and already natural),
+ "issueCategory": "one of: grammar | naturalness | none",
+ "mistakeType": "one of: tense, preposition, article, word-choice, word-order, collocation, phrasing, other",
+ "importance": "one of: high, medium, low — how much this would confuse a native listener or stand out as non-native",
+ "reviewPromptJp": "a short Japanese sentence Etsu could later translate back to English to drill this exact fix",
+ "expression": "ONLY if issueFound is true: the core reusable phrase from \"better\" that Etsu could reuse in other sentences — a short natural-English fragment in base/dictionary form (e.g. \"do five 1,000-meter intervals\", not the whole sentence, and not just a single word already covered by vocabulary study). Empty string if there's nothing worth extracting as a reusable phrase.",
+ "expressionJp": "short Japanese meaning of that expression phrase alone (empty string if expression is empty)",
+ "coachNext": "${isFinalTurn
+   ? "a short, natural CLOSING remark from the coach/teammate that wraps up this chat — NOT a new question, 1 sentence"
+   : "the next natural question or line the coach/teammate would say, continuing the SAME topic and staying within the scenario category, 1 sentence. If Etsu's reply left out a natural detail (how it felt, the pace, etc.), ask for it here rather than assuming it in \"better\"."}"
+}
+Keep all English fields short. Keep "points" minimal — do not add a point if grammarCorrect is true and naturalness is 'natural'.`;
+}
+
+// Used only if the sample capability is unavailable (offline fallback), so the app still works end to end.
+// Critical: this must NEVER substitute a different, pre-written sentence for "better" — that was
+// exactly the bug (a scripted scenario example replacing what Etsu actually said). It only performs
+// a light, content-preserving cleanup (capitalization / trailing punctuation) of Etsu's own text, and
+// does not claim to judge grammar or naturalness beyond that, since it can't reliably do so without AI.
+function lightCleanup(text) {
+  let t = text.trim();
+  if (!t) return t;
+  t = t.charAt(0).toUpperCase() + t.slice(1);
+  if (!/[.!?]$/.test(t)) t += ".";
+  return t;
+}
+function fallbackEval(text, convo, isFinalTurn) {
+  const trimmed = text.trim();
+  const formattingIssue = !/^[A-Z]/.test(trimmed) || !/[.!?]$/.test(trimmed);
+  return {
+    grammarCorrect: true,
+    grammarNote: "",
+    naturalness: "natural",
+    naturalNote: "",
+    meaningClear: true,
+    better: lightCleanup(trimmed),
+    betterIsCorrection: false,
+    points: formattingIssue ? ["文の最初は大文字に、最後は句読点をつけよう。"] : [],
+    issueFound: formattingIssue,
+    issueCategory: formattingIssue ? "naturalness" : "none",
+    mistakeType: "other",
+    importance: "low",
+    reviewPromptJp: convo.jp,
+    expression: "",
+    expressionJp: "",
+    coachNext: isFinalTurn ? "Nice talking with you — see you at practice!" : "Got it — tell me more about that."
+  };
+}
+
+/* ---- REVIEW (SRS: due-today items, both vocab and Conversation Expression) ---- */
+// Adapts any SRS item (vocab or expression) into the {w, jp, accepted, ...} shape the
+// classify functions already understand, so Review reuses the exact same judging engine.
+function findWordBankEntry(en) {
+  const key = normalizeWord(en);
+  return WORD_BANK.find(w => normalizeWord(w.w) === key);
+}
+function itemTargetWord(item) {
+  if (item.type === "expression" || (item.type === "conversation" && item.expression)) {
+    return { w: item.expression || item.en, jp: item.jp, accepted: [], alternatives: [], close: [], category: item.category || "", example: item.natural || null };
+  }
+  const wb = findWordBankEntry(item.en);
+  return { w: item.en, jp: item.jp, accepted: (wb && wb.accepted) || [], alternatives: (wb && wb.alternatives) || [], close: (wb && wb.close) || [], category: (wb && wb.category) || "", example: wb ? wb.example : null };
+}
+// Builds a fill-in-the-blank sentence for cloze-type review, from the word's own example
+// (vocab) or by blanking the expression out of its corrected sentence (expression). Returns
+// null when no sentence is available, so the caller can fall back to a different question type.
+function buildClozeSentence(item) {
+  if (item.type === "expression") {
+    const natural = item.natural || "";
+    const expr = item.expression || "";
+    if (!natural || !expr) return null;
+    const idx = natural.toLowerCase().indexOf(expr.toLowerCase());
+    if (idx === -1) return null;
+    return natural.slice(0, idx) + "____" + natural.slice(idx + expr.length);
+  }
+  const wb = findWordBankEntry(item.en);
+  return wb ? wb.example.replace("___", "____") : null;
+}
+function buildSituationPrompt(item) {
+  const cat = item.category || "この場面";
+  return `${cat} の場面を想定して、この表現を使って英語で一文書いてみよう。`;
+}
+
+function renderReview() {
+  if (!reviewSession) {
+    const queue = prioritizeItems(dueTodayItems()).slice(0, 8);
+    if (queue.length === 0) {
+      main.innerHTML = `
+        <div class="screen-head">
+          <div class="backbtn" id="backHome">←</div>
+          <div class="screen-title">復習</div>
+        </div>
+        <div class="empty"><div class="big">✅</div>本日の復習はありません。<br>明日また来るか、先に単語・会話を終えましょう。</div>
+      `;
+      document.getElementById("backHome").addEventListener("click", () => go("home"));
+      return;
+    }
+    reviewSession = { queue, idx: 0, revealed: false, checking: false, currentType: null, evalResult: null, draftText: "" };
+  }
+  const s = reviewSession;
+
+  if (s.idx >= s.queue.length) {
+    markDoneToday("review"); // fires as soon as the session is actually complete, not gated behind a specific button
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backHome">←</div>
+        <div class="screen-title">復習<span class="sec">セッション完了</span></div>
+      </div>
+      <div class="resultcard">
+        <div class="score">✓</div>
+        <p class="msg">${s.queue.length}件を復習しました。次回の出題日を更新しました。</p>
+        <button class="cta" id="toHomeBtn">ホームに戻る</button>
+      </div>`;
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+    document.getElementById("toHomeBtn").addEventListener("click", () => go("home"));
+    return;
+  }
+
+  const item = s.queue[s.idx];
+  const target = itemTargetWord(item);
+  if (!s.currentType) {
+    let t = nextReviewType(item);
+    if (t === "cloze" && !buildClozeSentence(item)) t = item.type === "expression" ? "situation" : "jp2en";
+    s.currentType = t;
+  }
+  const type = s.currentType;
+  const sourceBadge = item.type === "expression" || item.type === "conversation" ? "💬 会話Expression"
+    : item.type === "vocab" ? "🔤 単語" : "✳️ サンプル";
+  const head = `
+    <div class="screen-head">
+      <div class="backbtn" id="backHome">←</div>
+      <div class="screen-title">復習<span class="sec">${s.idx+1} / ${s.queue.length}<span class="duebadge">${sourceBadge}</span></span></div>
+    </div>
+  `;
+
+  if (type === "jp2en" || type === "en2jp" || type === "cloze") {
+    const prompt = type === "jp2en" ? target.jp
+      : type === "en2jp" ? target.w
+      : buildClozeSentence(item);
+    const hint = type === "jp2en" ? "この意味を英語で入力しよう"
+      : type === "en2jp" ? "日本語の意味を入力しよう"
+      : "空欄に入る語句を入力しよう";
+    const placeholder = type === "en2jp" ? "日本語で入力…" : "英語で入力…";
+    main.innerHTML = head + `
+      <div class="reviewcard">
+        <div class="jp" style="font-size:${type === 'cloze' ? '18px' : '22px'};">${prompt}</div>
+        <div class="hint" style="margin-bottom:14px;">${hint}</div>
+        <input class="answer" id="revAns" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
+        ${s.revealed ? "" : `<button class="cta" id="revSubmit" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
+        ${s.revealed ? renderItemFeedback(type, target, s, item) : ""}
+        ${s.revealed ? `<button class="cta" id="revNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
+      </div>
+    `;
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+    if (!s.revealed) {
+      const inputEl = document.getElementById("revAns");
+      const btn = document.getElementById("revSubmit");
+      if (!s.checking) inputEl.focus();
+      const doCheck = async () => {
+        const val = inputEl.value.trim();
+        if (!val || s.checking) return;
+        s.lastInput = val;
+        s.checking = true; render();
+        if (type === "en2jp") {
+          s.lastVerdict = await classifyJapaneseAnswer(val, target);
+          s.lastNatural = null; s.lastNote = null;
+        } else {
+          const ctx = type === "cloze" ? buildClozeSentence(item) : null;
+          const res = await classifyEnglishAnswer(val, target, ctx);
+          s.lastVerdict = res.verdict; s.lastNatural = res.natural || null; s.lastNote = res.note || null;
+        }
+        // Grade immediately: the SRS item's dueDate is updated right here, so the feedback
+        // card shown below already reflects the real, current next-review date.
+        reviewSrsItem(item, s.lastVerdict, type);
+        s.checking = false; s.revealed = true; render();
+      };
+      btn.addEventListener("click", doCheck);
+      inputEl.addEventListener("keydown", e => { if (e.key === "Enter") doCheck(); });
+    } else {
+      document.getElementById("revNext").addEventListener("click", () => goNext());
+    }
+    return;
+  }
+
+  // situation / produce: free English writing, judged by the same AI coach used in Vocabulary's produce type
+  const isSituation = type === "situation";
+  main.innerHTML = head + `
+    <div class="reviewcard">
+      <div class="jp" style="font-size:18px;">${isSituation ? buildSituationPrompt(item) : `「${target.jp}」を使って英文を作ってみよう`}</div>
+      <div class="hint" style="margin-bottom:14px;">対象表現：${target.w}</div>
+      <textarea class="answer" id="revProduce" placeholder="英語で入力してください…" ${s.checking ? "disabled" : ""}>${s.draftText || ""}</textarea>
+      ${s.evalResult ? "" : `<button class="cta" id="revProduceCheck" ${s.checking ? "disabled" : ""} style="width:100%;">${s.checking ? "確認中…" : "添削してもらう"}</button>`}
+      <div id="revEvalArea"></div>
+      ${s.evalResult ? `<button class="cta" id="revNext" style="width:100%;margin-top:6px;">次へ</button>` : ""}
+    </div>
+  `;
+  document.getElementById("backHome").addEventListener("click", () => go("home"));
+  if (s.evalResult) {
+    const r = s.evalResult;
+    const passed = r.wordUsed && r.grammarCorrect;
+    document.getElementById("revEvalArea").innerHTML = (r.wordUsed === false ? `
+      <div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ 「${target.w}」がまだ使われていません。</div>
+    ` : `<div style="margin:10px 0;font-size:13px;color:var(--good);font-weight:600;">✅ 「${target.w}」を使えています。</div>`) + renderEvalCard(r)
+      + `<div style="margin-top:10px;font-size:13px;color:var(--muted);">📅 ${formatDueLabel(item.dueDate)}</div>`;
+    document.getElementById("revNext").addEventListener("click", () => goNext());
+  } else {
+    const ta = document.getElementById("revProduce");
+    ta.addEventListener("input", () => { s.draftText = ta.value; });
+    document.getElementById("revProduceCheck").addEventListener("click", async () => {
+      const text = ta.value.trim();
+      if (!text || s.checking) return;
+      s.checking = true; s.draftText = text; render();
+      const localWordUsed = containsTargetWord(text, target);
+      let result;
+      if (!localWordUsed) {
+        result = { wordUsed: false, grammarCorrect: true, grammarNote: "", naturalness: "natural", naturalNote: "", better: target.example ? target.example.replace("___", target.w) : target.w, betterIsCorrection: false, points: [], issueFound: true, issueCategory: "word-usage", mistakeType: "word-usage", importance: "medium", reviewPromptJp: target.jp };
+      } else {
+        const sample = await getSample();
+        if (!sample) result = fallbackVocabEval(target, text);
+        else {
+          try { result = await sample.json(buildVocabProducePrompt(target, text)); }
+          catch (e) { console.warn("review produce sample failed", e); result = fallbackVocabEval(target, text); }
+        }
+        result.wordUsed = true;
+      }
+      // Grade immediately, same as the recall types above, so the countdown shown is current.
+      reviewSrsItem(item, (result.wordUsed && result.grammarCorrect) ? "correct" : "incorrect", type);
+      s.checking = false; s.evalResult = result; render();
+    });
+  }
+
+  function goNext() {
+    s.idx += 1;
+    s.revealed = false; s.checking = false; s.currentType = null;
+    s.evalResult = null; s.draftText = "";
+    render();
+  }
+}
+
+function renderItemFeedback(type, target, s, item) {
+  const verdict = s.lastVerdict;
+  const dueLine = `<div style="margin-top:8px;font-size:12.5px;color:var(--muted);">📅 ${formatDueLabel(item.dueDate)}</div>`;
+  if (type === "en2jp") {
+    if (verdict === "correct") return `<div class="correctbox"><div class="lbl">✅ 正解</div>${target.jp}${dueLine}</div>`;
+    if (verdict === "close") return `
+      <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
+        <div class="lbl" style="color:var(--accent);">△ 惜しい</div>
+        <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
+        <div style="margin:2px 0;"><b>正確な意味：</b> ${target.jp}</div>
+        ${dueLine}
+      </div>`;
+    return `
+      <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
+        <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
+        <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
+        <div style="margin:2px 0;"><b>正解：</b> ${target.jp}</div>
+        ${dueLine}
+      </div>`;
+  }
+  const natural = s.lastNatural || target.w;
+  const showNatural = normalizeWord(natural) !== normalizeWord(s.lastInput || "");
+  if (verdict === "correct") return `
+    <div class="correctbox"><div class="lbl">✅ 正解</div>「${escapeHtml(s.lastInput || "")}」で正解です。
+      ${showNatural ? `<div style="margin-top:6px;"><b>より自然な表現：</b> ${natural}</div>` : ""}
+      ${dueLine}
+    </div>`;
+  if (verdict === "close") return `
+    <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
+      <div class="lbl" style="color:var(--accent);">△ 惜しい</div>
+      <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
+      <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
+      <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "方向性は合っているが、この文脈での代表的な表現ではない。"}</div>
+      ${dueLine}
+    </div>`;
+  return `
+    <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
+      <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
+      <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
+      <div style="margin:2px 0;"><b>正解例：</b> ${target.w}</div>
+      <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
+      <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "意味を正確に思い出そう。"}</div>
+      ${dueLine}
+    </div>`;
+}
+
+/* ==================================================================
+   TEST — Vocabulary Test / Expression Test / Conversation Test / Weekly Test.
+   Expression Test and Weekly Test share one engine (runSrsTest) since both just
+   run a list of existing SRS items (vocab and/or expression) through the same
+   generic judging pipeline already used by Review — answering here directly
+   updates those items' real SRS schedule, so there is no separate "register
+   weak points" step for them: grading IS the re-registration, with zero risk
+   of duplicates because these are the same item objects, not new ones.
+   ================================================================== */
+const MISTAKE_LABELS = {
+  tense: "時制", preposition: "前置詞", article: "冠詞", "word-choice": "語彙選択",
+  "word-order": "語順", collocation: "コロケーション", phrasing: "言い回し",
+  "word-usage": "単語の使用", grammar: "文法", naturalness: "自然さ",
+  "jp2en": "英単語の想起", "en2jp": "意味の想起", cloze: "穴埋め", other: "その他"
+};
+function weakPointLabel(key) { return MISTAKE_LABELS[key] || key; }
+function tallyWeakPoints(tally, key) { if (!key) return; tally[key] = (tally[key] || 0) + 1; }
+function topWeakPoints(tally, n) {
+  return Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, n || 4).map(([k]) => weakPointLabel(k));
+}
+
+function renderTest() {
+  if (!testSession) {
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backHome">←</div>
+        <div class="screen-title">テスト<span class="sec">定着度を確認しよう</span></div>
+      </div>
+      <div class="themegrid">
+        <div class="themebtn" data-mode="vocabTest"><div>Vocabulary Test<div class="jp">これまでの単語から出題</div></div><div class="arrow">→</div></div>
+        <div class="themebtn" data-mode="expressionTest"><div>Expression Test<div class="jp">会話で登録したExpressionから出題</div></div><div class="arrow">→</div></div>
+        <div class="themebtn" data-mode="convoTest"><div>Conversation Test<div class="jp">1つの場面で自由英作文</div></div><div class="arrow">→</div></div>
+        <div class="themebtn" data-mode="weeklyTest"><div>Weekly Test<div class="jp">今週学んだ内容をまとめて確認</div></div><div class="arrow">→</div></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:16px;">Monthly Testは準備中です。</p>
+    `;
+    document.getElementById("backHome").addEventListener("click", () => go("home"));
+    main.querySelectorAll(".themebtn").forEach(el => {
+      el.addEventListener("click", () => startTest(el.dataset.mode));
+    });
+    return;
+  }
+  if (testSession.mode === "empty") {
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backToMenu">←</div>
+        <div class="screen-title">テスト</div>
+      </div>
+      <div class="empty"><div class="big">📭</div>${testSession.message}</div>
+    `;
+    document.getElementById("backToMenu").addEventListener("click", () => { testSession = null; render(); });
+    return;
+  }
+  if (testSession.mode === "vocabTest") return renderVocabTest();
+  if (testSession.mode === "srsTest") return renderSrsTest();
+  if (testSession.mode === "convoTest") return renderConvoTest();
+}
+
+function startTest(mode) {
+  if (mode === "vocabTest") {
+    testSession = { mode: "vocabTest", items: buildVocabItems(8, ["jp2en", "en2jp", "cloze", "mcq"]), idx: 0, correct: 0, close: 0, wrong: 0, tally: {}, revealed: false, checking: false, evalResult: null };
+  } else if (mode === "expressionTest") {
+    const pool = state.srsItems.filter(i => i.type === "expression");
+    if (!pool.length) { testSession = { mode: "empty", message: "まだ登録されたExpressionがありません。Conversationを進めると増えていきます。" }; render(); return; }
+    testSession = { mode: "srsTest", title: "Expression Test", queue: shuffle(pool).slice(0, 6), idx: 0, correct: 0, close: 0, wrong: 0, tally: {}, revealed: false, checking: false, currentType: null, evalResult: null };
+  } else if (mode === "weeklyTest") {
+    const weekAgo = addDaysIso(todayStr(), -7);
+    const pool = state.srsItems.filter(i => (i.createdAt || "") >= weekAgo && i.type !== "seed");
+    if (!pool.length) { testSession = { mode: "empty", message: "今週はまだ復習対象がありません。VocabularyとConversationを進めよう。" }; render(); return; }
+    testSession = { mode: "srsTest", title: "Weekly Test", queue: shuffle(pool).slice(0, 8), idx: 0, correct: 0, close: 0, wrong: 0, tally: {}, revealed: false, checking: false, currentType: null, evalResult: null };
+  } else if (mode === "convoTest") {
+    testSession = { mode: "convoTest", situation: CONVERSATIONS[Math.floor(Math.random() * CONVERSATIONS.length)], phase: "answer", checking: false, evalResult: null };
+  }
+  render();
+}
+
+/* ---- Vocabulary Test ---- */
+function renderVocabTest() {
+  const s = testSession;
+  if (s.idx >= s.items.length) return renderTestResults(s, "Vocabulary Test");
+  const it = s.items[s.idx];
+  const w = it.word;
+  const head = `
+    <div class="screen-head">
+      <div class="backbtn" id="backToMenu">←</div>
+      <div class="screen-title">Vocabulary Test<span class="sec">問題 ${s.idx+1} / ${s.items.length}</span></div>
+    </div>
+    <div class="progressbar"><div style="width:${(s.idx/s.items.length)*100}%"></div></div>
+  `;
+  function toMenu() { testSession = null; render(); }
+  function gradeItem(verdict, kind) {
+    tallyWeakPoints(s.tally, kind || it.type);
+    if (verdict === "correct") s.correct++; else if (verdict === "close") { s.close++; } else s.wrong++;
+    if (verdict !== "correct") addSrsItem({ jp: w.jp, en: w.w, mistakeType: it.type, importance: verdict === "close" ? "low" : "medium" });
+  }
+  function goNext() {
+    s.idx++; s.revealed = false; s.checking = false; s.evalResult = null;
+    render();
+  }
+
+  if (it.type === "mcq") {
+    main.innerHTML = head + `
+      <div class="qword"><div class="w">${w.w}</div><div class="hint">この単語の意味は？</div></div>
+      <div class="options" id="opts">${it.options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join("")}</div>`;
+    document.getElementById("backToMenu").addEventListener("click", toMenu);
+    main.querySelectorAll(".opt").forEach(btn => btn.addEventListener("click", () => {
+      if (s.revealed) return;
+      s.revealed = true;
+      const ok = btn.dataset.val === w.jp;
+      main.querySelectorAll(".opt").forEach(b => { b.disabled = true; if (b.dataset.val === w.jp) b.classList.add("correct"); else if (b === btn) b.classList.add("wrong"); });
+      gradeItem(ok ? "correct" : "incorrect", "mcq"); // graded now, not after the delay — the delay is purely visual
+      setTimeout(() => goNext(), 700);
+    }));
+    return;
+  }
+
+  const prompt = it.type === "jp2en" ? w.jp : it.type === "en2jp" ? w.w : w.example.replace("___", "＿＿＿");
+  const placeholder = it.type === "en2jp" ? "日本語で入力…" : "英語で入力…";
+  const wordStyle = it.type === "en2jp"
+    ? "font-family:'Bebas Neue','Inter',sans-serif;font-size:36px;"
+    : it.type === "cloze"
+      ? "font-family:'Inter',sans-serif;font-weight:700;font-size:19px;line-height:1.5;"
+      : "font-family:'Inter',sans-serif;font-weight:700;font-size:28px;line-height:1.3;";
+  main.innerHTML = head + `
+    <div class="qword"><div class="w" style="${wordStyle}">${prompt}</div></div>
+    <input class="answer" id="tAns" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
+    ${s.revealed ? "" : `<button class="cta" id="tCheck" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
+    <div id="tFb"></div>
+    ${s.revealed ? `<button class="cta" id="tNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
+  `;
+  document.getElementById("backToMenu").addEventListener("click", toMenu);
+  if (!s.revealed) {
+    const inputEl = document.getElementById("tAns");
+    if (!s.checking) inputEl.focus();
+    const doCheck = async () => {
+      const val = inputEl.value.trim();
+      if (!val || s.checking) return;
+      s.lastInput = val; s.checking = true; render();
+      if (it.type === "en2jp") { s.lastVerdict = await classifyJapaneseAnswer(val, w); }
+      else {
+        const ctx = it.type === "cloze" ? w.example.replace("___", "____") : null;
+        const res = await classifyEnglishAnswer(val, w, ctx);
+        s.lastVerdict = res.verdict; s.lastNatural = res.natural;
+      }
+      gradeItem(s.lastVerdict, it.type); // graded now, at reveal time
+      s.checking = false; s.revealed = true; render();
+    };
+    document.getElementById("tCheck").addEventListener("click", doCheck);
+    inputEl.addEventListener("keydown", e => { if (e.key === "Enter") doCheck(); });
+  } else {
+    const v = s.lastVerdict;
+    document.getElementById("tFb").innerHTML = v === "correct"
+      ? `<div class="correctbox"><div class="lbl">✅ 正解</div>${it.type === "en2jp" ? w.jp : w.w}</div>`
+      : v === "close"
+        ? `<div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);"><div class="lbl" style="color:var(--accent);">△ 惜しい</div>正解：${it.type === "en2jp" ? w.jp : w.w}</div>`
+        : `<div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);"><div class="lbl" style="color:var(--bad);">❌ 不正解</div>正解：${it.type === "en2jp" ? w.jp : w.w}</div>`;
+    document.getElementById("tNext").addEventListener("click", () => goNext());
+  }
+}
+
+/* ---- Expression Test / Weekly Test (shared engine over existing SRS items) ---- */
+function renderSrsTest() {
+  const s = testSession;
+  if (s.idx >= s.queue.length) return renderTestResults(s, s.title);
+  const item = s.queue[s.idx];
+  const target = itemTargetWord(item);
+  if (!s.currentType) {
+    let t = nextReviewType(item);
+    if (t === "cloze" && !buildClozeSentence(item)) t = item.type === "expression" ? "situation" : "jp2en";
+    if (t === "produce" || t === "situation") t = "jp2en"; // keep the Test flow to quick-answer formats
+    s.currentType = t;
+  }
+  const type = s.currentType;
+  function toMenu() { testSession = null; render(); }
+  function gradeItem(verdict) {
+    tallyWeakPoints(s.tally, item.mistakeType || type);
+    if (verdict === "correct") s.correct++; else if (verdict === "close") s.close++; else s.wrong++;
+    reviewSrsItem(item, verdict, type);
+  }
+  function goNext() {
+    s.idx++; s.revealed = false; s.checking = false; s.currentType = null;
+    render();
+  }
+  const head = `
+    <div class="screen-head">
+      <div class="backbtn" id="backToMenu">←</div>
+      <div class="screen-title">${s.title}<span class="sec">問題 ${s.idx+1} / ${s.queue.length}</span></div>
+    </div>
+    <div class="progressbar"><div style="width:${(s.idx/s.queue.length)*100}%"></div></div>
+  `;
+  const prompt = type === "jp2en" ? target.jp : type === "en2jp" ? target.w : buildClozeSentence(item);
+  const placeholder = type === "en2jp" ? "日本語で入力…" : "英語で入力…";
+  const wordStyle = type === "en2jp"
+    ? "font-family:'Bebas Neue','Inter',sans-serif;font-size:30px;"
+    : type === "cloze"
+      ? "font-family:'Inter',sans-serif;font-weight:700;font-size:18px;line-height:1.5;"
+      : "font-family:'Inter',sans-serif;font-weight:700;font-size:24px;line-height:1.3;";
+  main.innerHTML = head + `
+    <div class="qword"><div class="w" style="${wordStyle}">${prompt}</div>
+    <div class="hint">${item.type === "expression" ? "💬 Expression" : "🔤 単語"}</div></div>
+    <input class="answer" id="tAns" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
+    ${s.revealed ? "" : `<button class="cta" id="tCheck" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
+    <div id="tFb"></div>
+    ${s.revealed ? `<button class="cta" id="tNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
+  `;
+  document.getElementById("backToMenu").addEventListener("click", toMenu);
+  if (!s.revealed) {
+    const inputEl = document.getElementById("tAns");
+    if (!s.checking) inputEl.focus();
+    const doCheck = async () => {
+      const val = inputEl.value.trim();
+      if (!val || s.checking) return;
+      s.lastInput = val; s.checking = true; render();
+      if (type === "en2jp") { s.lastVerdict = await classifyJapaneseAnswer(val, target); }
+      else {
+        const ctx = type === "cloze" ? buildClozeSentence(item) : null;
+        const res = await classifyEnglishAnswer(val, target, ctx);
+        s.lastVerdict = res.verdict;
+      }
+      gradeItem(s.lastVerdict); // graded now, at reveal time — SRS/tally already saved before the user sees "次へ"
+      s.checking = false; s.revealed = true; render();
+    };
+    document.getElementById("tCheck").addEventListener("click", doCheck);
+    inputEl.addEventListener("keydown", e => { if (e.key === "Enter") doCheck(); });
+  } else {
+    const v = s.lastVerdict;
+    const ref = type === "en2jp" ? target.jp : target.w;
+    document.getElementById("tFb").innerHTML = v === "correct"
+      ? `<div class="correctbox"><div class="lbl">✅ 正解</div>${ref}</div>`
+      : v === "close"
+        ? `<div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);"><div class="lbl" style="color:var(--accent);">△ 惜しい</div>正解：${ref}</div>`
+        : `<div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);"><div class="lbl" style="color:var(--bad);">❌ 不正解</div>正解：${ref}</div>`;
+    document.getElementById("tNext").addEventListener("click", () => goNext());
+  }
+}
+
+/* ---- Conversation Test (single free-response scenario) ---- */
+function buildConvoTestPrompt(situation, text) {
+  return `You are grading Etsu's (a Japanese university runner, upper-beginner/intermediate ESL) free English response to a realistic teammate/coach scenario, for a test — not an ongoing chat.
+
+Situation (${situation.category || situation.title}, ${situation.jp}): "${situation.prompt}"
+Etsu's response: "${text}"
+
+Evaluate holistically. CRITICAL: never add facts, numbers, feelings, or details Etsu did not state — "better" must preserve his exact meaning, only fixed/polished.
+
+Reply with STRICT JSON only, no markdown fences:
+{
+ "meaningConveyed": boolean,
+ "grammarCorrect": boolean,
+ "grammarNote": "short Japanese note",
+ "naturalness": "one of: natural | more_natural_available | unnatural",
+ "naturalNote": "short Japanese note",
+ "vocabularyNote": "short Japanese note on word choice appropriateness for this context",
+ "expressionNote": "short Japanese note on whether he used natural running/team-context expressions",
+ "practicalityNote": "short Japanese note on whether this response would actually work in a real conversation with a teammate/coach",
+ "better": "a natural version preserving EXACTLY his stated meaning, nothing added",
+ "points": ["at most 3 short Japanese notes on what to improve"],
+ "weakAreas": ["subset of: grammar, naturalness, vocabulary, expression, practicality — only ones that actually need work"],
+ "expression": "optional: one reusable phrase from 'better' worth drilling later, or empty string",
+ "expressionJp": "Japanese meaning of that phrase, or empty string"
+}`;
+}
+function fallbackConvoTestEval(text) {
+  const t = text.trim();
+  return {
+    meaningConveyed: true, grammarCorrect: true, grammarNote: "", naturalness: "natural", naturalNote: "",
+    vocabularyNote: "", expressionNote: "", practicalityNote: "",
+    better: lightCleanup(t), points: [], weakAreas: [], expression: "", expressionJp: ""
+  };
+}
+function renderConvoTest() {
+  const s = testSession;
+  const sit = s.situation;
+  function toMenu() { testSession = null; render(); }
+  if (s.phase === "answer") {
+    main.innerHTML = `
+      <div class="screen-head">
+        <div class="backbtn" id="backToMenu">←</div>
+        <div class="screen-title">Conversation Test<span class="sec">${sit.jp}</span></div>
+      </div>
+      <div class="bubble npc"><div class="who">${sit.who}</div>${sit.prompt}</div>
+      <textarea class="answer" id="ctAns" placeholder="英語で返信してください…" ${s.checking ? "disabled" : ""}></textarea>
+      <button class="cta" id="ctCheck" ${s.checking ? "disabled" : ""} style="width:100%;">${s.checking ? "確認中…" : "提出する"}</button>
+    `;
+    document.getElementById("backToMenu").addEventListener("click", toMenu);
+    document.getElementById("ctCheck").addEventListener("click", async () => {
+      const ta = document.getElementById("ctAns");
+      const text = ta.value.trim();
+      if (!text || s.checking) return;
+      s.checking = true; s.userText = text; render();
+      const sample = await getSample();
+      let result;
+      if (!sample) result = fallbackConvoTestEval(text);
+      else {
+        try { result = await sample.json(buildConvoTestPrompt(sit, text)); }
+        catch (e) { console.warn("convo test sample failed", e); result = fallbackConvoTestEval(text); }
+      }
+      s.checking = false; s.evalResult = result; s.phase = "result"; render();
+    });
+    return;
+  }
+
+  const r = s.evalResult;
+  const rows = [
+    ["意味が伝わったか", r.meaningConveyed ? "✅ 伝わっている" : "❌ 伝わりにくい"],
+    ["Grammar", (r.grammarCorrect ? "✅ " : "△ ") + (r.grammarNote || (r.grammarCorrect ? "問題なし" : ""))],
+    ["Naturalness", r.naturalNote || (r.naturalness === "natural" ? "自然" : "改善の余地あり")],
+    ["Vocabulary", r.vocabularyNote || "—"],
+    ["Expression", r.expressionNote || "—"],
+    ["Practicality", r.practicalityNote || "—"]
+  ];
+  main.innerHTML = `
+    <div class="screen-head">
+      <div class="backbtn" id="backToMenu">←</div>
+      <div class="screen-title">Conversation Test<span class="sec">結果</span></div>
+    </div>
+    <div class="bubble me"><div class="who">You</div>${escapeHtml(s.userText)}</div>
+    <div class="evalcard"><div class="row better"><div class="k">より自然な英語</div><div>${r.better}</div></div></div>
+    ${rows.map(([k, v]) => `<div class="evalcard"><div class="row"><div class="k">${k}</div><div>${v}</div></div></div>`).join("")}
+    ${(r.points && r.points.length) ? `<div class="evalcard"><div class="row point"><div class="k">ポイント</div><div>${r.points.join(" / ")}</div></div></div>` : ""}
+    <button class="cta" id="ctDone" style="width:100%;margin-top:10px;">テストメニューに戻る</button>
+  `;
+  document.getElementById("backToMenu").addEventListener("click", toMenu);
+  document.getElementById("ctDone").addEventListener("click", () => {
+    if (r.expression) {
+      addExpressionSrsItem({ expression: r.expression, expressionJp: r.expressionJp, userOriginal: s.userText, natural: r.better, category: sit.category || sit.title, importance: "medium", mistakeType: (r.weakAreas && r.weakAreas[0]) || "phrasing" });
+    }
+    testSession = null;
+    go("home");
+  });
+}
+
+/* ---- Shared results screen for Vocabulary Test / Expression Test / Weekly Test ---- */
+function renderTestResults(s, title) {
+  const total = s.correct + s.close + s.wrong;
+  const weak = topWeakPoints(s.tally, 4);
+  main.innerHTML = `
+    <div class="screen-head">
+      <div class="backbtn" id="backToMenu">←</div>
+      <div class="screen-title">${title}<span class="sec">結果</span></div>
+    </div>
+    <div class="resultcard">
+      <div class="score">${s.correct}/${total}</div>
+      <p class="msg">△惜しい：${s.close}件　❌不正解：${s.wrong}件</p>
+    </div>
+    ${weak.length ? `
+      <div class="evalcard">
+        <div class="row"><div class="k">Weak Points</div><div>${weak.join(" / ")}</div></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin:4px 8px 16px;">これらは復習キューに反映されています。</p>
+    ` : `<div class="empty"><div class="big">🎯</div>弱点は見つかりませんでした。</div>`}
+    <button class="cta" id="toMenuBtn" style="width:100%;">テストメニューに戻る</button>
+  `;
+  document.getElementById("backToMenu").addEventListener("click", () => { testSession = null; go("home"); });
+  document.getElementById("toMenuBtn").addEventListener("click", () => { testSession = null; render(); });
+}
+
+render();
+</script>
+</body>
+</html>
