@@ -191,6 +191,8 @@
   .bubble { border-radius: var(--radius); padding: 14px 16px; margin-bottom: 14px; font-size: 14.5px; line-height:1.5; }
   .bubble.npc { background: var(--surface); border:1px solid var(--line); }
   .bubble.npc .who { font-size: 11.5px; color: var(--accent); font-weight:700; margin-bottom: 4px; letter-spacing:.03em; }
+  .tapword { border-bottom: 1px dotted var(--muted); cursor: pointer; }
+  .tapword:active { color: var(--accent); border-bottom-color: var(--accent); }
   .bubble.me { background: var(--surface-2); border:1px solid var(--line); margin-left: 26px; }
   .bubble.me .who { font-size: 11.5px; color: var(--muted); font-weight:700; margin-bottom: 4px; letter-spacing:.03em; }
   .bubble.thinking { color: var(--muted); font-style: normal; }
@@ -285,31 +287,31 @@
 <script>
 /* ============ DATA ============ */
 const WORD_BANK = [
-  {w:"pace", jp:"ペース", pos:"n.", alternatives:["速度","歩調"], close:["スピード"], category:"Running", distractors:["筋肉","栄養補給","監督"], example:"He set an easy ___ for the first kilometer.", accepted:["paces"]},
-  {w:"recovery", jp:"回復", pos:"n.", alternatives:["リカバリー","疲労回復"], close:["休養","休憩"], category:"Recovery", distractors:["加速","脱水","怪我"], example:"Stretching and eating well are key parts of ___.", accepted:["recoveries"]},
-  {w:"teammate", jp:"チームメイト", pos:"n.", alternatives:["チームの仲間","味方選手"], close:["友達","同僚"], category:"Team Training", distractors:["対戦相手","審判","観客"], example:"My ___ helped push the pace on the last rep.", accepted:["teammates"]},
-  {w:"coach", jp:"コーチ", pos:"n.", alternatives:["指導者","監督"], close:["先生","トレーナー"], category:"Training", distractors:["選手","記録係","スポンサー"], example:"The ___ gave us today's workout plan.", accepted:["coaches"]},
-  {w:"facility", jp:"施設", pos:"n.", alternatives:["設備"], close:["建物","場所"], category:"University of Toronto", distractors:["奨学金","履歴書","日程"], example:"The training ___ at U of T has a full indoor track.", accepted:["facilities"]},
-  {w:"injury", jp:"怪我", pos:"n.", alternatives:["負傷","故障"], close:["痛み","疲労"], category:"Injury", distractors:["勝利","記録","契約"], example:"He's been dealing with a calf ___ since Tuesday.", accepted:["injuries"]},
-  {w:"competition", jp:"大会", pos:"n.", alternatives:["競技会","試合"], close:["練習","イベント"], category:"Running", distractors:["練習","休養日","移動"], example:"Etsu is preparing for a big ___ next month.", accepted:["competitions"]},
-  {w:"warm-up", jp:"アップ", pos:"n.", alternatives:["準備運動","ウォームアップ"], close:["ストレッチ","体操"], category:"Training", distractors:["整理体操","筋トレ","水分補給"], example:"We always do a light jog as a ___ before hard sessions.", accepted:["warmup","warm up","warmups","warm ups"]},
-  {w:"interval", jp:"インターバル走", pos:"n.", alternatives:["間欠走"], close:["持久走","反復練習"], category:"Track & Field", distractors:["持久走","休憩室","坂道"], example:"We ran 6x1000m ___s at threshold pace.", accepted:["intervals"]},
-  {w:"mileage", jp:"走行距離", pos:"n.", alternatives:["週間走行量","走った距離"], close:["距離","運動量"], category:"Training", distractors:["体重","心拍数","気温"], example:"My weekly ___ is around 100 kilometers.", accepted:[]},
-  {w:"roommate", jp:"ルームメイト", pos:"n.", alternatives:["同室者","同居人"], close:["友達","隣人"], category:"Daily Life", distractors:["家主","隣人","同僚"], example:"My ___ and I share a small kitchen in the dorm.", accepted:["roommates","room mate","room mates"]},
-  {w:"dormitory", jp:"寮", pos:"n.", alternatives:["学生寮"], close:["宿舎","住居"], category:"University", distractors:["体育館","図書館","食堂"], example:"I live in a ___ near the track.", accepted:["dorm","dorms","dormitories"]},
-  {w:"scholarship", jp:"奨学金", pos:"n.", alternatives:[], close:["学費援助","支援金"], category:"University", distractors:["授業料","保証金","罰金"], example:"He received a sports ___ to study in Canada.", accepted:["scholarships"]},
-  {w:"visa", jp:"ビザ", pos:"n.", alternatives:["査証"], close:["許可証","証明書"], category:"Canada", distractors:["保険証","学生証","航空券"], example:"I need a student ___ before I can train in Toronto.", accepted:["visas"]},
-  {w:"apartment", jp:"アパート", pos:"n.", alternatives:["部屋","マンション"], close:["住居","家"], category:"Daily Life", distractors:["寮","体育館","駐車場"], example:"We're looking for an ___ close to campus.", accepted:["apartments"]},
-  {w:"groceries", jp:"食料品", pos:"n.", alternatives:["食材","日用品"], close:["買い物","食べ物"], category:"Daily Life", distractors:["衣類","医薬品","文房具"], example:"I need to buy ___ before practice tomorrow.", accepted:["grocery"]},
-  {w:"homesick", jp:"ホームシックな", pos:"adj.", alternatives:["故郷が恋しい","望郷の念にかられた"], close:["寂しい","つらい"], category:"Daily Life", distractors:["空腹な","疲労した","興奮した"], example:"It's normal to feel a little ___ during your first month abroad.", accepted:[]},
-  {w:"jet lag", jp:"時差ぼけ", pos:"n.", alternatives:[], close:["疲労","眠気"], category:"Travel", distractors:["乗り物酔い","筋肉痛","脱水症状"], example:"After the flight to Canada, I had bad ___ for a few days.", accepted:["jetlag"]},
-  {w:"locker room", jp:"ロッカールーム", pos:"n.", alternatives:["更衣室"], close:["部屋","控室"], category:"Team Training", distractors:["会議室","医務室","食堂"], example:"We change into our spikes in the ___.", accepted:["locker rooms"]},
-  {w:"physiotherapist", jp:"理学療法士", pos:"n.", alternatives:["フィジオセラピスト"], close:["医者","トレーナー"], category:"Injury", distractors:["栄養士","通訳","会計士"], example:"The team ___ checked my calf after practice.", accepted:["physiotherapists","physio"]},
-  {w:"stride", jp:"ストライド", pos:"n.", alternatives:["歩幅"], close:["歩き方","フォーム"], category:"Track & Field", distractors:["反発力","筋力","体幹"], example:"His ___ looked much longer in the second half of the race.", accepted:["strides"]},
-  {w:"tempo run", jp:"テンポ走", pos:"n.", alternatives:[], close:["インターバル走","ジョグ"], category:"Training", distractors:["インターバル走","ジョグ","坂道ダッシュ"], example:"Today's session is a 20-minute ___ at threshold pace.", accepted:["tempo runs"]},
-  {w:"cooldown", jp:"クールダウン", pos:"n.", alternatives:["整理運動"], close:["ストレッチ","休憩"], category:"Training", distractors:["準備運動","筋トレ","有酸素運動"], example:"Don't skip the ___ jog after a hard workout.", accepted:["cool down","cool-down","cooldowns"]},
-  {w:"tuition", jp:"授業料", pos:"n.", alternatives:["学費"], close:["費用","料金"], category:"University", distractors:["家賃","保険料","通信費"], example:"International ___ can be expensive at Canadian universities.", accepted:[]},
-  {w:"permit", jp:"許可証", pos:"n.", alternatives:["許可"], close:["証明書","ビザ"], category:"Canada", distractors:["診断書","領収書","予約票"], example:"I applied for a work ___ for my working holiday.", accepted:["permits"]}
+  {w:"pace", jp:"ペース", pos:"n.", alternatives:["速度","歩調"], close:["スピード"], category:"Running", distractors:["筋肉","栄養補給","監督"], example:"He set an easy ___ for the first kilometer.", exampleJp:"彼は最初の1キロを楽なペースで入った。", accepted:["paces"]},
+  {w:"recovery", jp:"回復", pos:"n.", alternatives:["リカバリー","疲労回復"], close:["休養","休憩"], category:"Recovery", distractors:["加速","脱水","怪我"], example:"Stretching and eating well are key parts of ___.", exampleJp:"ストレッチとしっかり食べることは、回復の重要な要素だ。", accepted:["recoveries"]},
+  {w:"teammate", jp:"チームメイト", pos:"n.", alternatives:["チームの仲間","味方選手"], close:["友達","同僚"], category:"Team Training", distractors:["対戦相手","審判","観客"], example:"My ___ helped push the pace on the last rep.", exampleJp:"最後の1本は、チームメイトがペースを引っ張ってくれた。", accepted:["teammates"]},
+  {w:"coach", jp:"コーチ", pos:"n.", alternatives:["指導者","監督"], close:["先生","トレーナー"], category:"Training", distractors:["選手","記録係","スポンサー"], example:"The ___ gave us today's workout plan.", exampleJp:"コーチが今日の練習メニューを教えてくれた。", accepted:["coaches"]},
+  {w:"facility", jp:"施設", pos:"n.", alternatives:["設備"], close:["建物","場所"], category:"University of Toronto", distractors:["奨学金","履歴書","日程"], example:"The training ___ at U of T has a full indoor track.", exampleJp:"U of Tのトレーニング施設には、屋内トラックが完備されている。", accepted:["facilities"]},
+  {w:"injury", jp:"怪我", pos:"n.", alternatives:["負傷","故障"], close:["痛み","疲労"], category:"Injury", distractors:["勝利","記録","契約"], example:"He's been dealing with a calf ___ since Tuesday.", exampleJp:"彼は火曜日からふくらはぎの怪我に悩まされている。", accepted:["injuries"]},
+  {w:"competition", jp:"大会", pos:"n.", alternatives:["競技会","試合"], close:["練習","イベント"], category:"Running", distractors:["練習","休養日","移動"], example:"Etsu is preparing for a big ___ next month.", exampleJp:"エツは来月の大きな大会に向けて準備をしている。", accepted:["competitions"]},
+  {w:"warm-up", jp:"アップ", pos:"n.", alternatives:["準備運動","ウォームアップ"], close:["ストレッチ","体操"], category:"Training", distractors:["整理体操","筋トレ","水分補給"], example:"We always do a light jog as a ___ before hard sessions.", exampleJp:"きつい練習の前には、いつも軽いジョグをアップとして行う。", accepted:["warmup","warm up","warmups","warm ups"]},
+  {w:"interval", jp:"インターバル走", pos:"n.", alternatives:["間欠走"], close:["持久走","反復練習"], category:"Track & Field", distractors:["持久走","休憩室","坂道"], example:"We ran 6x1000m ___s at threshold pace.", exampleJp:"閾値ペースで1000mのインターバルを6本走った。", accepted:["intervals"]},
+  {w:"mileage", jp:"走行距離", pos:"n.", alternatives:["週間走行量","走った距離"], close:["距離","運動量"], category:"Training", distractors:["体重","心拍数","気温"], example:"My weekly ___ is around 100 kilometers.", exampleJp:"週間の走行距離はだいたい100キロくらいだ。", accepted:[]},
+  {w:"roommate", jp:"ルームメイト", pos:"n.", alternatives:["同室者","同居人"], close:["友達","隣人"], category:"Daily Life", distractors:["家主","隣人","同僚"], example:"My ___ and I share a small kitchen in the dorm.", exampleJp:"寮では、ルームメイトと小さなキッチンを共有している。", accepted:["roommates","room mate","room mates"]},
+  {w:"dormitory", jp:"寮", pos:"n.", alternatives:["学生寮"], close:["宿舎","住居"], category:"University", distractors:["体育館","図書館","食堂"], example:"I live in a ___ near the track.", exampleJp:"トラックの近くの寮に住んでいる。", accepted:["dorm","dorms","dormitories"]},
+  {w:"scholarship", jp:"奨学金", pos:"n.", alternatives:[], close:["学費援助","支援金"], category:"University", distractors:["授業料","保証金","罰金"], example:"He received a sports ___ to study in Canada.", exampleJp:"彼はカナダで学ぶためのスポーツ奨学金をもらった。", accepted:["scholarships"]},
+  {w:"visa", jp:"ビザ", pos:"n.", alternatives:["査証"], close:["許可証","証明書"], category:"Canada", distractors:["保険証","学生証","航空券"], example:"I need a student ___ before I can train in Toronto.", exampleJp:"トロントで練習するには、先に学生ビザが必要だ。", accepted:["visas"]},
+  {w:"apartment", jp:"アパート", pos:"n.", alternatives:["部屋","マンション"], close:["住居","家"], category:"Daily Life", distractors:["寮","体育館","駐車場"], example:"We're looking for an ___ close to campus.", exampleJp:"キャンパスに近いアパートを探している。", accepted:["apartments"]},
+  {w:"groceries", jp:"食料品", pos:"n.", alternatives:["食材","日用品"], close:["買い物","食べ物"], category:"Daily Life", distractors:["衣類","医薬品","文房具"], example:"I need to buy ___ before practice tomorrow.", exampleJp:"明日の練習前に食料品を買っておく必要がある。", accepted:["grocery"]},
+  {w:"homesick", jp:"ホームシックな", pos:"adj.", alternatives:["故郷が恋しい","望郷の念にかられた"], close:["寂しい","つらい"], category:"Daily Life", distractors:["空腹な","疲労した","興奮した"], example:"It's normal to feel a little ___ during your first month abroad.", exampleJp:"海外生活の最初の1ヶ月は、少しホームシックになるのが普通だ。", accepted:[]},
+  {w:"jet lag", jp:"時差ぼけ", pos:"n.", alternatives:[], close:["疲労","眠気"], category:"Travel", distractors:["乗り物酔い","筋肉痛","脱水症状"], example:"After the flight to Canada, I had bad ___ for a few days.", exampleJp:"カナダへのフライトの後、数日間ひどい時差ぼけだった。", accepted:["jetlag"]},
+  {w:"locker room", jp:"ロッカールーム", pos:"n.", alternatives:["更衣室"], close:["部屋","控室"], category:"Team Training", distractors:["会議室","医務室","食堂"], example:"We change into our spikes in the ___.", exampleJp:"ロッカールームでスパイクに履き替える。", accepted:["locker rooms"]},
+  {w:"physiotherapist", jp:"理学療法士", pos:"n.", alternatives:["フィジオセラピスト"], close:["医者","トレーナー"], category:"Injury", distractors:["栄養士","通訳","会計士"], example:"The team ___ checked my calf after practice.", exampleJp:"練習後、チームの理学療法士がふくらはぎを診てくれた。", accepted:["physiotherapists","physio"]},
+  {w:"stride", jp:"ストライド", pos:"n.", alternatives:["歩幅"], close:["歩き方","フォーム"], category:"Track & Field", distractors:["反発力","筋力","体幹"], example:"His ___ looked much longer in the second half of the race.", exampleJp:"レース後半、彼のストライドは明らかに大きくなっていた。", accepted:["strides"]},
+  {w:"tempo run", jp:"テンポ走", pos:"n.", alternatives:[], close:["インターバル走","ジョグ"], category:"Training", distractors:["インターバル走","ジョグ","坂道ダッシュ"], example:"Today's session is a 20-minute ___ at threshold pace.", exampleJp:"今日の練習は、閾値ペースでの20分間のテンポ走だ。", accepted:["tempo runs"]},
+  {w:"cooldown", jp:"クールダウン", pos:"n.", alternatives:["整理運動"], close:["ストレッチ","休憩"], category:"Training", distractors:["準備運動","筋トレ","有酸素運動"], example:"Don't skip the ___ jog after a hard workout.", exampleJp:"きつい練習の後は、クールダウンのジョグを省略しないように。", accepted:["cool down","cool-down","cooldowns"]},
+  {w:"tuition", jp:"授業料", pos:"n.", alternatives:["学費"], close:["費用","料金"], category:"University", distractors:["家賃","保険料","通信費"], example:"International ___ can be expensive at Canadian universities.", exampleJp:"カナダの大学では、留学生の授業料が高額になることがある。", accepted:[]},
+  {w:"permit", jp:"許可証", pos:"n.", alternatives:["許可"], close:["証明書","ビザ"], category:"Canada", distractors:["診断書","領収書","予約票"], example:"I applied for a work ___ for my working holiday.", exampleJp:"ワーキングホリデーのために、労働許可証を申請した。", accepted:["permits"]}
 ];
 
 const CONVERSATIONS = [
@@ -725,7 +727,7 @@ function containsTargetWord(sentence, word) {
 /* ---- SRS ---- */
 // Vocabulary mistakes (jp2en / en2jp / cloze / produce). Deduplicates on the English word:
 // if this word already has an open SRS item, update it instead of creating a second one.
-function addSrsItem({ jp, en, type, mistakeType, importance }) {
+function addSrsItem({ jp, en, type, mistakeType, importance, note }) {
   const t = todayStr();
   const key = normalizeWord(en);
   const existing = state.srsItems.find(i => i.type === "vocab" && normalizeWord(i.en) === key && !i.mastered);
@@ -733,6 +735,7 @@ function addSrsItem({ jp, en, type, mistakeType, importance }) {
     existing.jp = jp || existing.jp;
     existing.mistakeType = mistakeType || existing.mistakeType;
     existing.importance = importance || existing.importance;
+    existing.note = note || existing.note || "";
     existing.intervalIndex = 0;
     existing.dueDate = addDaysIso(t, SRS_LADDER[0]);
     existing.incorrectCount = (existing.incorrectCount || 0) + 1;
@@ -745,6 +748,7 @@ function addSrsItem({ jp, en, type, mistakeType, importance }) {
     id: uid(), jp, en, type: "vocab",
     mistakeType: mistakeType || "other",
     importance: importance || "medium",
+    note: note || "",
     createdAt: t,
     dueDate: addDaysIso(t, SRS_LADDER[0]),
     intervalIndex: 0,
@@ -760,7 +764,7 @@ function addSrsItem({ jp, en, type, mistakeType, importance }) {
 // single word), with its Japanese meaning, the user's original attempt, and the corrected/natural
 // form. Deduplicates on the normalized expression text so re-encountering the same expression
 // across sessions updates one item rather than creating duplicates.
-function addExpressionSrsItem({ expression, expressionJp, userOriginal, natural, category, importance, mistakeType }) {
+function addExpressionSrsItem({ expression, expressionJp, userOriginal, natural, category, importance, mistakeType, note }) {
   if (!expression) return null;
   const t = todayStr();
   const key = normalizeWord(expression);
@@ -771,6 +775,7 @@ function addExpressionSrsItem({ expression, expressionJp, userOriginal, natural,
     existing.category = category || existing.category;
     existing.importance = importance || existing.importance;
     existing.mistakeType = mistakeType || existing.mistakeType;
+    existing.note = note || existing.note || "";
     existing.intervalIndex = 0;
     existing.dueDate = addDaysIso(t, SRS_LADDER[0]);
     existing.incorrectCount = (existing.incorrectCount || 0) + 1;
@@ -784,6 +789,7 @@ function addExpressionSrsItem({ expression, expressionJp, userOriginal, natural,
     expression, jp: expressionJp || "", userOriginal: userOriginal || "", natural: natural || expression,
     category: category || "", mistakeType: mistakeType || "phrasing",
     importance: importance || "medium",
+    note: note || "",
     createdAt: t,
     dueDate: addDaysIso(t, SRS_LADDER[0]),
     intervalIndex: 0,
@@ -1243,7 +1249,8 @@ function renderVocab() {
             en: result.better || text,
             type: "vocab",
             mistakeType: result.mistakeType || "phrasing",
-            importance: result.importance || "medium"
+            importance: result.importance || "medium",
+            note: (result.points && result.points[0]) || result.grammarNote || result.naturalNote || ""
           });
         }
         render();
@@ -1264,7 +1271,7 @@ function renderVocab() {
       s.correctCount += 1; state.vocabCorrect += 1;
     } else if (it.type !== "produce") {
       // "close" (△) and "incorrect" (❌) are both treated as not-yet-mastered for SRS purposes.
-      addSrsItem({ jp: w.jp, en: w.w, type: "vocab", mistakeType: it.type, importance: verdict === "close" ? "low" : "medium" });
+      addSrsItem({ jp: w.jp, en: w.w, type: "vocab", mistakeType: it.type, importance: verdict === "close" ? "low" : "medium", note: s.lastNote || "" });
     }
     saveState();
     setTimeout(() => {
@@ -1299,9 +1306,9 @@ Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
 {
  "wordUsed": boolean (true only if the target word or a natural inflected form actually appears, used with roughly the right meaning),
  "grammarCorrect": boolean,
- "grammarNote": "if grammarCorrect is false, max 10-word note on the actual grammar error; else empty string",
+ "grammarNote": "if grammarCorrect is false, a short JAPANESE explanation (plain language, no English grammar jargon) of the error; else empty string",
  "naturalness": "one of: natural | more_natural_available | unnatural",
- "naturalNote": "max 10-word note from a native runner's perspective; empty string if already natural",
+ "naturalNote": "a short JAPANESE note (plain language) from a native runner's perspective; empty string if already natural",
  "better": "a natural native-speaker version of the sentence, still using the target word",
  "betterIsCorrection": boolean (true only if fixing a real grammar error),
  "points": ["at most 2 short Japanese notes, one sentence each"],
@@ -1410,6 +1417,7 @@ function renderConversation() {
       <div class="screen-title">会話<span class="sec">${s.convo.jp} · ターン ${s.turn + 1} / ${s.targetTurns}</span></div>
     </div>
     <div id="thread"></div>
+    <div id="wordLookupArea"></div>
     <textarea class="answer" id="userAns" placeholder="英語で返信してください…" ${s.busy ? "disabled" : ""}></textarea>
     <button class="cta" id="submitAns" ${s.busy ? "disabled" : ""} style="width:100%;">${s.busy ? "確認中…" : "送信"}</button>
   `;
@@ -1419,7 +1427,7 @@ function renderConversation() {
   s.thread.forEach(item => {
     if (item.from === "npc") {
       threadEl.insertAdjacentHTML("beforeend", `
-        <div class="bubble npc"><div class="who">${item.who}</div>${item.text}</div>`);
+        <div class="bubble npc"><div class="who">${item.who}</div>${wrapTappableWords(item.text)}</div>`);
     } else if (item.from === "me") {
       threadEl.insertAdjacentHTML("beforeend", `
         <div class="bubble me"><div class="who">You</div>${escapeHtml(item.text)}</div>`);
@@ -1428,6 +1436,14 @@ function renderConversation() {
     }
   });
   threadEl.scrollIntoView({ block: "end" });
+  threadEl.addEventListener("click", (e) => {
+    const el = e.target.closest(".tapword");
+    if (!el || s.wordLookupBusy) return;
+    const bubbleEl = el.closest(".bubble");
+    const contextText = bubbleEl ? bubbleEl.textContent.replace(/^\s*\S+\s*/, "") : ""; // drop the "who" label
+    lookupUnknownWord(el.dataset.word, contextText, s);
+  });
+  renderWordLookupArea(s);
 
   document.getElementById("submitAns").addEventListener("click", () => handleSend());
   document.getElementById("userAns").focus();
@@ -1502,7 +1518,8 @@ function commitConversationExpressions(s) {
       natural: it.better,
       category: s.convo.category || s.convo.title,
       importance: it.importance,
-      mistakeType: it.mistakeType
+      mistakeType: it.mistakeType,
+      note: it.point || ""
     });
     it.saved = true;
   });
@@ -1579,6 +1596,8 @@ function renderRecallFeedback(it, w, s) {
   const referenceAnswer = w.w;
   const natural = s.lastNatural || referenceAnswer;
   const showNatural = normalizeWord(natural) !== normalizeWord(s.lastInput || "");
+  const jpMeaningLine = it.type === "cloze" ? `<div style="margin-top:6px;"><b>意味：</b> ${w.jp}</div>` : "";
+  const sentenceJpLine = (it.type === "cloze" && w.exampleJp) ? `<div style="margin-top:2px;"><b>例文の訳：</b> ${w.exampleJp}</div>` : "";
 
   if (verdict === "correct") {
     return `
@@ -1586,6 +1605,7 @@ function renderRecallFeedback(it, w, s) {
         <div class="lbl">✅ 正解</div>
         「${escapeHtml(s.lastInput || "")}」は意味として正しいです。
         ${showNatural ? `<div style="margin-top:6px;"><b>より自然・一般的な表現：</b> ${natural}</div>` : ""}
+        ${jpMeaningLine}${sentenceJpLine}
       </div>`;
   }
   if (verdict === "close") {
@@ -1595,6 +1615,7 @@ function renderRecallFeedback(it, w, s) {
         <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "（空欄）")}</div>
         <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
         <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "意味は近いが、この文脈での代表的な表現としては少しずれている。"}</div>
+        ${jpMeaningLine}${sentenceJpLine}
       </div>`;
   }
   return `
@@ -1604,6 +1625,7 @@ function renderRecallFeedback(it, w, s) {
       <div style="margin:2px 0;"><b>正解例：</b> ${referenceAnswer}</div>
       <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
       <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || (w.accepted && w.accepted.length ? `スペルを確認しよう（${w.accepted.join(" / ")} も可）。` : "スペルを確認しよう。")}</div>
+      ${jpMeaningLine}${sentenceJpLine}
     </div>`;
 }
 
@@ -1666,9 +1688,9 @@ You MUST evaluate grammar and naturalness as two SEPARATE, NON-OVERLAPPING dimen
 Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
 {
  "grammarCorrect": boolean,
- "grammarNote": "if grammarCorrect is false, max 10-word note on the actual grammar error (e.g. missing article, wrong tense). If grammarCorrect is true, leave this empty string.",
+ "grammarNote": "if grammarCorrect is false, a short JAPANESE explanation (one sentence, plain language, no English grammar jargon like 'subject-verb agreement') of the actual grammar error and how to fix it. If grammarCorrect is true, leave this empty string.",
  "naturalness": "one of: natural | more_natural_available | unnatural",
- "naturalNote": "max 10-word note from a native runner's perspective, describing the actual issue (e.g. 'awkward collocation, not how natives phrase reps') — empty string if naturalness is 'natural'",
+ "naturalNote": "a short JAPANESE note (one sentence, plain language) from a native runner's perspective describing the actual issue — empty string if naturalness is 'natural'",
  "meaningClear": boolean,
  "better": "a natural native-speaker phrasing of EXACTLY what Etsu said — same facts, same content, nothing added and nothing removed. If grammarCorrect is true and naturalness is 'natural', this can equal or lightly polish the original.",
  "betterIsCorrection": boolean (true only if this fixes an actual grammar error; false if it's just a more natural/idiomatic alternative to an already-correct sentence),
@@ -1729,12 +1751,109 @@ function findWordBankEntry(en) {
   const key = normalizeWord(en);
   return WORD_BANK.find(w => normalizeWord(w.w) === key);
 }
+
+// Wraps each word of NPC dialogue in a tappable span, so Etsu can tap a word he doesn't know —
+// including one the NPC used, not just his own mistakes — and add it straight to SRS.
+function wrapTappableWords(text) {
+  return text.split(/(\s+)/).map(tok => {
+    if (!tok || /^\s+$/.test(tok)) return tok;
+    const clean = tok.replace(/^[^a-zA-Z']+|[^a-zA-Z']+$/g, "");
+    if (!clean) return escapeHtml(tok);
+    return `<span class="tapword" data-word="${escapeHtml(clean)}">${escapeHtml(tok)}</span>`;
+  }).join("");
+}
+
+function buildWordLookupPrompt(word, contextSentence) {
+  return `You are a compact Japanese-English dictionary helping a Japanese university student (a competitive runner) understand a word he just read in an English practice conversation about running, university life, or moving to Canada.
+
+He tapped this word/phrase because he doesn't know it: "${word}"
+${contextSentence ? `It appeared in this sentence: "${contextSentence}"` : ""}
+
+Give ONLY the meaning as used in this specific context (not a full dictionary entry). Keep it short and practical for a Japanese learner.
+
+Reply with STRICT JSON only, no markdown fences:
+{
+ "jp": "short Japanese meaning as used here (a word or short phrase, not a full sentence)",
+ "pos": "short Japanese part-of-speech label, e.g. 動詞 / 名詞 / 形容詞 / 副詞",
+ "note": "one short Japanese sentence with a usage nuance or tip, or empty string if not needed"
+}`;
+}
+
+// Looks up a tapped word: checks the local WORD_BANK first (instant, no API call), then falls
+// back to the AI for anything not in it. On success, registers it in SRS via the existing
+// dedup-safe addSrsItem — repeated taps on the same word just refresh its review schedule.
+async function lookupUnknownWord(rawWord, contextSentence, s) {
+  const cleaned = (rawWord || "").replace(/^[^a-zA-Z']+|[^a-zA-Z']+$/g, "");
+  if (!cleaned || s.wordLookupBusy) return;
+  s.wordLookupBusy = true;
+  s.wordLookupResult = null;
+  renderWordLookupArea(s);
+  const wb = findWordBankEntry(cleaned);
+  let result = null;
+  if (wb) {
+    result = { jp: wb.jp, pos: wb.pos, note: "" };
+  } else {
+    try {
+      const sample = await getSample();
+      if (sample) result = await sample.json(buildWordLookupPrompt(cleaned, contextSentence));
+    } catch (e) {
+      console.warn("word lookup failed", e);
+      result = null;
+    }
+  }
+  s.wordLookupBusy = false;
+  if (result && result.jp) {
+    addSrsItem({ jp: result.jp, en: cleaned, type: "vocab", mistakeType: "unknown-word", importance: "medium", note: result.note || "" });
+    s.wordLookupResult = { word: cleaned, jp: result.jp, pos: result.pos || "", note: result.note || "", added: true };
+  } else {
+    s.wordLookupResult = { word: cleaned, added: false };
+  }
+  renderWordLookupArea(s);
+}
+
+// Renders the small inline card showing a tapped word's meaning (or a failure state), just above
+// the reply box. Re-run after every state change instead of a full renderConversation() so typing
+// in progress in the reply textarea below isn't disturbed.
+function renderWordLookupArea(s) {
+  const el = document.getElementById("wordLookupArea");
+  if (!el) return;
+  if (s.wordLookupBusy) {
+    el.innerHTML = `<div class="correctbox" style="margin-top:8px;">「${escapeHtml(s.wordLookupResult && s.wordLookupResult.word || "")}」の意味を調べています…</div>`;
+    return;
+  }
+  const r = s.wordLookupResult;
+  if (!r) { el.innerHTML = ""; return; }
+  if (!r.added) {
+    el.innerHTML = `
+      <div class="correctbox" style="margin-top:8px;background:rgba(248,113,113,0.1);border-color:var(--bad);">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <b>「${escapeHtml(r.word)}」</b>
+          <span id="wlClose" style="cursor:pointer;color:var(--muted);padding:0 4px;">×</span>
+        </div>
+        <div style="margin-top:4px;font-size:13px;color:var(--muted);">意味を取得できませんでした。もう一度タップしてみて。</div>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div class="correctbox" style="margin-top:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <b>「${escapeHtml(r.word)}」</b>
+          <span id="wlClose" style="cursor:pointer;color:var(--muted);padding:0 4px;">×</span>
+        </div>
+        <div style="margin-top:4px;">${r.pos ? `<span style="color:var(--muted);">${escapeHtml(r.pos)}</span> · ` : ""}${escapeHtml(r.jp)}</div>
+        ${r.note ? `<div style="margin-top:4px;font-size:12.5px;color:var(--muted);">${escapeHtml(r.note)}</div>` : ""}
+        <div style="margin-top:6px;font-size:12.5px;color:var(--good);">✅ 単語帳に追加しました（Reviewに登場します）</div>
+      </div>`;
+  }
+  const closeBtn = document.getElementById("wlClose");
+  if (closeBtn) closeBtn.addEventListener("click", () => { s.wordLookupResult = null; renderWordLookupArea(s); });
+}
+
 function itemTargetWord(item) {
   if (item.type === "expression" || (item.type === "conversation" && item.expression)) {
-    return { w: item.expression || item.en, jp: item.jp, accepted: [], alternatives: [], close: [], category: item.category || "", example: item.natural || null };
+    return { w: item.expression || item.en, jp: item.jp, accepted: [], alternatives: [], close: [], category: item.category || "", example: item.natural || null, exampleJp: null };
   }
   const wb = findWordBankEntry(item.en);
-  return { w: item.en, jp: item.jp, accepted: (wb && wb.accepted) || [], alternatives: (wb && wb.alternatives) || [], close: (wb && wb.close) || [], category: (wb && wb.category) || "", example: wb ? wb.example : null };
+  return { w: item.en, jp: item.jp, accepted: (wb && wb.accepted) || [], alternatives: (wb && wb.alternatives) || [], close: (wb && wb.close) || [], category: (wb && wb.category) || "", example: wb ? wb.example : null, exampleJp: wb ? wb.exampleJp : null };
 }
 // Builds a fill-in-the-blank sentence for cloze-type review, from the word's own example
 // (vocab) or by blanking the expression out of its corrected sentence (expression). Returns
@@ -1876,6 +1995,7 @@ function renderReview() {
     document.getElementById("revEvalArea").innerHTML = (r.wordUsed === false ? `
       <div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ 「${target.w}」がまだ使われていません。</div>
     ` : `<div style="margin:10px 0;font-size:13px;color:var(--good);font-weight:600;">✅ 「${target.w}」を使えています。</div>`) + renderEvalCard(r)
+      + (item.note ? `<div style="margin-top:8px;font-size:12.5px;color:var(--muted);"><b>覚えておくポイント：</b> ${item.note}</div>` : "")
       + `<div style="margin-top:10px;font-size:13px;color:var(--muted);">📅 ${formatDueLabel(item.dueDate)}</div>`;
     document.getElementById("revNext").addEventListener("click", () => goNext());
   } else {
@@ -1915,21 +2035,26 @@ function renderReview() {
 function renderItemFeedback(type, target, s, item) {
   const verdict = s.lastVerdict;
   const dueLine = `<div style="margin-top:8px;font-size:12.5px;color:var(--muted);">📅 ${formatDueLabel(item.dueDate)}</div>`;
+  // The reason this item was originally added to Review — persisted at creation time, resurfaced
+  // every time it's reviewed (not just on first encounter), regardless of today's verdict.
+  const savedNoteLine = item.note ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);"><b>覚えておくポイント：</b> ${item.note}</div>` : "";
+  const jpMeaningLine = type === "cloze" ? `<div style="margin-top:6px;"><b>意味：</b> ${target.jp}</div>` : "";
+  const sentenceJpLine = (type === "cloze" && target.exampleJp) ? `<div style="margin-top:2px;"><b>例文の訳：</b> ${target.exampleJp}</div>` : "";
   if (type === "en2jp") {
-    if (verdict === "correct") return `<div class="correctbox"><div class="lbl">✅ 正解</div>${target.jp}${dueLine}</div>`;
+    if (verdict === "correct") return `<div class="correctbox"><div class="lbl">✅ 正解</div>${target.jp}${savedNoteLine}${dueLine}</div>`;
     if (verdict === "close") return `
       <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
         <div class="lbl" style="color:var(--accent);">△ 惜しい</div>
         <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
         <div style="margin:2px 0;"><b>正確な意味：</b> ${target.jp}</div>
-        ${dueLine}
+        ${savedNoteLine}${dueLine}
       </div>`;
     return `
       <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
         <div class="lbl" style="color:var(--bad);">❌ 不正解</div>
         <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
         <div style="margin:2px 0;"><b>正解：</b> ${target.jp}</div>
-        ${dueLine}
+        ${savedNoteLine}${dueLine}
       </div>`;
   }
   const natural = s.lastNatural || target.w;
@@ -1937,7 +2062,7 @@ function renderItemFeedback(type, target, s, item) {
   if (verdict === "correct") return `
     <div class="correctbox"><div class="lbl">✅ 正解</div>「${escapeHtml(s.lastInput || "")}」で正解です。
       ${showNatural ? `<div style="margin-top:6px;"><b>より自然な表現：</b> ${natural}</div>` : ""}
-      ${dueLine}
+      ${jpMeaningLine}${sentenceJpLine}${savedNoteLine}${dueLine}
     </div>`;
   if (verdict === "close") return `
     <div class="correctbox" style="background:rgba(232,90,42,0.1);border-color:var(--accent);">
@@ -1945,7 +2070,7 @@ function renderItemFeedback(type, target, s, item) {
       <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.lastInput || "")}</div>
       <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
       <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "方向性は合っているが、この文脈での代表的な表現ではない。"}</div>
-      ${dueLine}
+      ${jpMeaningLine}${sentenceJpLine}${savedNoteLine}${dueLine}
     </div>`;
   return `
     <div class="correctbox" style="background:rgba(248,113,113,0.1);border-color:var(--bad);">
@@ -1954,7 +2079,7 @@ function renderItemFeedback(type, target, s, item) {
       <div style="margin:2px 0;"><b>正解例：</b> ${target.w}</div>
       <div style="margin:2px 0;"><b>より自然な表現：</b> ${natural}</div>
       <div style="margin:2px 0;"><b>ポイント：</b> ${s.lastNote || "意味を正確に思い出そう。"}</div>
-      ${dueLine}
+      ${jpMeaningLine}${sentenceJpLine}${savedNoteLine}${dueLine}
     </div>`;
 }
 
@@ -2051,7 +2176,7 @@ function renderVocabTest() {
   function gradeItem(verdict, kind) {
     tallyWeakPoints(s.tally, kind || it.type);
     if (verdict === "correct") s.correct++; else if (verdict === "close") { s.close++; } else s.wrong++;
-    if (verdict !== "correct") addSrsItem({ jp: w.jp, en: w.w, mistakeType: it.type, importance: verdict === "close" ? "low" : "medium" });
+    if (verdict !== "correct") addSrsItem({ jp: w.jp, en: w.w, mistakeType: it.type, importance: verdict === "close" ? "low" : "medium", note: s.lastNote || "" });
   }
   function goNext() {
     s.idx++; s.revealed = false; s.checking = false; s.evalResult = null;
@@ -2100,7 +2225,7 @@ function renderVocabTest() {
       else {
         const ctx = it.type === "cloze" ? w.example.replace("___", "____") : null;
         const res = await classifyEnglishAnswer(val, w, ctx);
-        s.lastVerdict = res.verdict; s.lastNatural = res.natural;
+        s.lastVerdict = res.verdict; s.lastNatural = res.natural; s.lastNote = res.note || null;
       }
       gradeItem(s.lastVerdict, it.type); // graded now, at reveal time
       s.checking = false; s.revealed = true; render();
@@ -2283,7 +2408,7 @@ function renderConvoTest() {
   document.getElementById("backToMenu").addEventListener("click", toMenu);
   document.getElementById("ctDone").addEventListener("click", () => {
     if (r.expression) {
-      addExpressionSrsItem({ expression: r.expression, expressionJp: r.expressionJp, userOriginal: s.userText, natural: r.better, category: sit.category || sit.title, importance: "medium", mistakeType: (r.weakAreas && r.weakAreas[0]) || "phrasing" });
+      addExpressionSrsItem({ expression: r.expression, expressionJp: r.expressionJp, userOriginal: s.userText, natural: r.better, category: sit.category || sit.title, importance: "medium", mistakeType: (r.weakAreas && r.weakAreas[0]) || "phrasing", note: (r.points && r.points[0]) || "" });
     }
     testSession = null;
     go("home");
