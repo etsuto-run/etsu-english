@@ -37,7 +37,7 @@ exports.handler = async function (event) {
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 600,
+        max_tokens: 1500,
         messages: [{ role: "user", content: prompt }]
       })
     });
