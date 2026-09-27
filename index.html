@@ -196,6 +196,15 @@
   .bubble.me { background: var(--surface-2); border:1px solid var(--line); margin-left: 26px; }
   .bubble.me .who { font-size: 11.5px; color: var(--muted); font-weight:700; margin-bottom: 4px; letter-spacing:.03em; }
   .bubble.thinking { color: var(--muted); font-style: normal; }
+  .pron { margin-top:8px; font-size:13.5px; color: var(--text); }
+  .pron .ipa { font-family: 'Inter', sans-serif; }
+  .pron .kana { color: var(--muted); font-size:12.5px; margin-left:6px; }
+  .pron .kana b { color: var(--accent); }
+  .pron .caution { font-size:11px; color: var(--muted); margin-top:3px; }
+  .speakbtn { display:inline-block; cursor:pointer; padding:0 6px; font-size:15px; user-select:none; }
+  .toolrow { display:flex; gap:8px; margin-bottom:8px; }
+  .toolrow .cta { flex:1; margin:0; padding:10px; font-size:14px; }
+  .replytime { font-size:11px; color: var(--muted); margin-top:4px; }
   .dot { display:inline-block; width:5px; height:5px; border-radius:50%; background: var(--muted); margin-right:3px; animation: blink 1.2s infinite; }
   .dot:nth-child(2){ animation-delay: .2s; } .dot:nth-child(3){ animation-delay: .4s; }
   @keyframes blink { 0%,80%,100%{opacity:.25} 40%{opacity:1} }
@@ -311,7 +320,32 @@ const WORD_BANK = [
   {w:"tempo run", jp:"テンポ走", pos:"n.", alternatives:[], close:["インターバル走","ジョグ"], category:"Training", distractors:["インターバル走","ジョグ","坂道ダッシュ"], example:"Today's session is a 20-minute ___ at threshold pace.", exampleJp:"今日の練習は、閾値ペースでの20分間のテンポ走だ。", accepted:["tempo runs"]},
   {w:"cooldown", jp:"クールダウン", pos:"n.", alternatives:["整理運動"], close:["ストレッチ","休憩"], category:"Training", distractors:["準備運動","筋トレ","有酸素運動"], example:"Don't skip the ___ jog after a hard workout.", exampleJp:"きつい練習の後は、クールダウンのジョグを省略しないように。", accepted:["cool down","cool-down","cooldowns"]},
   {w:"tuition", jp:"授業料", pos:"n.", alternatives:["学費"], close:["費用","料金"], category:"University", distractors:["家賃","保険料","通信費"], example:"International ___ can be expensive at Canadian universities.", exampleJp:"カナダの大学では、留学生の授業料が高額になることがある。", accepted:[]},
-  {w:"permit", jp:"許可証", pos:"n.", alternatives:["許可"], close:["証明書","ビザ"], category:"Canada", distractors:["診断書","領収書","予約票"], example:"I applied for a work ___ for my working holiday.", exampleJp:"ワーキングホリデーのために、労働許可証を申請した。", accepted:["permits"]}
+  {w:"permit", jp:"許可証", pos:"n.", alternatives:["許可"], close:["証明書","ビザ"], category:"Canada", distractors:["診断書","領収書","予約票"], example:"I applied for a work ___ for my working holiday.", exampleJp:"ワーキングホリデーのために、労働許可証を申請した。", accepted:["permits"]},
+  {w:"endurance", jp:"持久力", pos:"n.", alternatives:["スタミナ"], close:["体力","筋力"], category:"Running", distractors:["瞬発力","柔軟性","反射神経"], example:"Long, slow runs build your aerobic ___.", exampleJp:"ゆっくり長く走ることで、有酸素性の持久力が身につく。", accepted:[]},
+  {w:"sprint", jp:"スプリント", pos:"n./v.", alternatives:["全力疾走","短距離走"], close:["加速","ダッシュ"], category:"Track & Field", distractors:["持久走","休憩","準備運動"], example:"He finished the race with a strong ___ in the final 100 meters.", exampleJp:"彼はラスト100メートルで力強いスプリントを見せてレースを終えた。", accepted:["sprints","sprinting"]},
+  {w:"threshold", jp:"閾値", pos:"n.", alternatives:["乳酸閾値"], close:["ペース","限界"], category:"Training", distractors:["体重","心拍数","気温"], example:"We train at ___ pace twice a week.", exampleJp:"週に2回、閾値ペースで練習している。", accepted:[]},
+  {w:"taper", jp:"調整期間", pos:"n./v.", alternatives:["テーパー","調整"], close:["休養","減量"], category:"Training", distractors:["補強運動","栄養補給","記録会"], example:"I start my ___ two weeks before the race.", exampleJp:"レースの2週間前から調整期間（テーパー）に入る。", accepted:["tapering"]},
+  {w:"split", jp:"スプリット", pos:"n.", alternatives:["区間タイム","ラップタイム"], close:["記録","タイム"], category:"Track & Field", distractors:["順位","出走枠","コース"], example:"His first-mile ___ was faster than planned.", exampleJp:"彼の最初の1マイルのスプリットは、予定より速かった。", accepted:["splits"]},
+  {w:"cross-training", jp:"クロストレーニング", pos:"n.", alternatives:["補助的トレーニング"], close:["筋トレ","有酸素運動"], category:"Training", distractors:["インターバル走","テーパー","計測"], example:"Swimming is good ___ when you're injured.", exampleJp:"怪我をしているときは、水泳のようなクロストレーニングが良い。", accepted:["cross training"]},
+  {w:"hydration", jp:"水分補給", pos:"n.", alternatives:["水分摂取"], close:["栄養補給","休憩"], category:"Recovery", distractors:["筋トレ","計測","出走"], example:"Proper ___ helps prevent cramping in long races.", exampleJp:"しっかりと水分補給をすることで、長距離レースでの痙攣を防げる。", accepted:[]},
+  {w:"electrolytes", jp:"電解質", pos:"n.", alternatives:[], close:["栄養素","サプリメント"], category:"Recovery", distractors:["炭水化物","筋肉","脂肪"], example:"I add ___ to my water after a hard workout.", exampleJp:"きつい練習の後は、水に電解質を加えて飲んでいる。", accepted:["electrolyte"]},
+  {w:"overtraining", jp:"オーバートレーニング", pos:"n.", alternatives:["練習過多"], close:["疲労","燃え尽き"], category:"Injury", distractors:["準備不足","栄養不足","寝不足"], example:"Constant fatigue can be a sign of ___.", exampleJp:"常に疲労が抜けないのは、オーバートレーニングのサインかもしれない。", accepted:[]},
+  {w:"shin splints", jp:"シンスプリント", pos:"n.", alternatives:["脛の痛み"], close:["肉離れ","炎症"], category:"Injury", distractors:["捻挫","脱臼","骨折"], example:"___ are common among runners who increase mileage too fast.", exampleJp:"シンスプリントは、走行距離を急に増やしたランナーによく見られる。", accepted:["shin splint"]},
+  {w:"rehab", jp:"リハビリ", pos:"n.", alternatives:["リハビリテーション"], close:["治療","施術"], category:"Injury", distractors:["診断","手術","検査"], example:"He's doing ___ exercises for his hamstring three times a week.", exampleJp:"彼はハムストリングのリハビリを週に3回行っている。", accepted:["rehabilitation"]},
+  {w:"personal best", jp:"自己ベスト", pos:"n.", alternatives:["自己新記録"], close:["好記録","最高記録"], category:"Competition", distractors:["世界記録","大会記録","目標タイム"], example:"She set a new ___ in the 5000m last weekend.", exampleJp:"彼女は先週末、5000mで自己ベストを更新した。", accepted:["personal bests","PB"]},
+  {w:"qualifying time", jp:"標準記録", pos:"n.", alternatives:["参加標準記録"], close:["目標タイム","制限時間"], category:"Competition", distractors:["自己ベスト","組み合わせ","招待記録"], example:"He needs to run under 14:00 to hit the ___.", exampleJp:"彼は標準記録を突破するために、14分を切って走る必要がある。", accepted:["qualifying standard"]},
+  {w:"relay", jp:"リレー", pos:"n.", alternatives:["継走"], close:["団体戦","混成競技"], category:"Track & Field", distractors:["個人種目","記録会","予選"], example:"Our team came second in the 4x400m ___.", exampleJp:"私たちのチームは4×400mリレーで2位になった。", accepted:["relays"]},
+  {w:"spikes", jp:"スパイクシューズ", pos:"n.", alternatives:["スパイク"], close:["ランニングシューズ","陸上シューズ"], category:"Track & Field", distractors:["ゼッケン","ストップウォッチ","バトン"], example:"Don't forget to pack your ___ for the meet.", exampleJp:"競技会用のスパイクシューズを忘れずに持っていこう。", accepted:["spike"]},
+  {w:"heat", jp:"予選（組）", pos:"n.", alternatives:["組"], close:["準決勝","予選会"], category:"Competition", distractors:["決勝","表彰式","記録証"], example:"I'm in the second ___ of the 1500m.", exampleJp:"1500mの第2組（予選）に出場する。", accepted:["heats"]},
+  {w:"final", jp:"決勝", pos:"n.", alternatives:["決勝戦"], close:["準決勝","本戦"], category:"Competition", distractors:["予選","開会式","記録会"], example:"Only the top three from each heat advance to the ___.", exampleJp:"各組の上位3名だけが決勝に進出できる。", accepted:["finals"]},
+  {w:"credit", jp:"単位", pos:"n.", alternatives:["履修単位"], close:["科目","成績"], category:"University", distractors:["学費","奨学金","出席"], example:"I need 15 more ___s to graduate.", exampleJp:"卒業するには、あと15単位必要だ。", accepted:["credits"]},
+  {w:"semester", jp:"学期", pos:"n.", alternatives:[], close:["学年","学期末"], category:"University", distractors:["学部","講義","試験期間"], example:"This ___ is busier because of my thesis.", exampleJp:"卒論があるので、今学期は忙しい。", accepted:["semesters"]},
+  {w:"part-time job", jp:"アルバイト", pos:"n.", alternatives:["バイト"], close:["仕事","勤務"], category:"Daily Life", distractors:["奨学金","家賃","授業"], example:"I have a ___ at the cafeteria near my dorm.", exampleJp:"寮の近くの食堂でアルバイトをしている。", accepted:["part time job","parttime job"]},
+  {w:"budget", jp:"予算", pos:"n.", alternatives:["家計"], close:["費用","出費"], category:"Daily Life", distractors:["奨学金","給料","貯金"], example:"I need to stick to a tight ___ this month.", exampleJp:"今月はきつい予算でやりくりする必要がある。", accepted:["budgets"]},
+  {w:"currency exchange", jp:"両替", pos:"n.", alternatives:["為替"], close:["送金","振込"], category:"Canada", distractors:["入国審査","関税","保険"], example:"I did a ___ at the airport before leaving Japan.", exampleJp:"日本を出る前に、空港で両替をした。", accepted:["currency exchanges"]},
+  {w:"landlord", jp:"大家", pos:"n.", alternatives:["家主"], close:["管理人","不動産屋"], category:"Canada", distractors:["ルームメイト","隣人","仲介業者"], example:"My ___ said the rent is due on the first.", exampleJp:"大家さんは、家賃は1日払いだと言っていた。", accepted:["landlords"]},
+  {w:"immigration", jp:"入国審査", pos:"n.", alternatives:["出入国管理"], close:["税関","検疫"], category:"Travel", distractors:["搭乗手続き","手荷物受取","両替"], example:"The line for ___ at the airport was really long.", exampleJp:"空港の入国審査の列がとても長かった。", accepted:[]},
+  {w:"connecting flight", jp:"乗り継ぎ便", pos:"n.", alternatives:["乗継便"], close:["直行便","経由便"], category:"Travel", distractors:["国内線","貨物便","チャーター便"], example:"I only have 40 minutes for my ___ in Vancouver.", exampleJp:"バンクーバーでの乗り継ぎ便まで、40分しかない。", accepted:["connecting flights"]}
 ];
 
 const CONVERSATIONS = [
@@ -364,12 +398,95 @@ const CONVERSATIONS = [
    prompt:"We're flying out to the meet on Friday morning. Have you got your travel documents sorted?",
    who:"Coach Radchenko",
    model:"Yes, I've got my passport and student visa ready. What time do we need to be at the airport?",
-   modelJp:"移動の準備状況を伝え、必要な情報（集合時間など）を聞き返す練習。"}
+   modelJp:"移動の準備状況を伝え、必要な情報（集合時間など）を聞き返す練習。"},
+  {id:"uttcSmalltalk", title:"Before a UTTC group run", jp:"練習前の雑談（UTTC）", category:"Team Training",
+   prompt:"Hey, you're new here, right? Where are you from, and how long have you been in Toronto?",
+   who:"Maya · UTTC runner",
+   model:"Yeah, I'm from Tokyo. I got here two weeks ago on a working holiday visa.",
+   modelJp:"出身と、来た時期・理由を一言添えると会話が広がる。"},
+  {id:"cafeInterview", title:"Job interview at a café", jp:"カフェのバイト面接", category:"Work",
+   prompt:"Thanks for coming in. Can you tell me a bit about your work experience?",
+   who:"Sarah · Café manager",
+   model:"Sure. I've worked at a university cafeteria in Tokyo for two years, so I'm used to busy lunch rushes.",
+   modelJp:"経験年数と、仕事に活きる具体的な場面をセットで言う。"},
+  {id:"apartment", title:"Viewing an apartment", jp:"部屋の内見", category:"Housing",
+   prompt:"So this is the room. Rent is 1,100 a month, utilities included. Any questions?",
+   who:"Mr. Chen · Landlord",
+   model:"Is Wi-Fi included too? And how long is the lease?",
+   modelJp:"含まれるもの・契約期間など、具体的に質問する。"},
+  {id:"bankSin", title:"Opening a bank account", jp:"銀行口座の開設・SIN", category:"Daily Life",
+   prompt:"Welcome! To open an account, I'll need your passport, your work permit, and your SIN. Do you have those with you?",
+   who:"Bank advisor",
+   model:"I have my passport and work permit, but I haven't got my SIN yet. Can I still open an account?",
+   modelJp:"持っている物・持っていない物を分けて伝え、代わりの方法を聞く。"},
+  {id:"physio", title:"Explaining an injury to a physio", jp:"理学療法士に怪我を説明", category:"Injury",
+   prompt:"Okay, tell me what's going on. Where does it hurt, and when did it start?",
+   who:"Dr. Patel · Physiotherapist",
+   model:"My left shin started hurting about a week ago, mostly when I run downhill.",
+   modelJp:"場所・いつから・どんな時に痛むか、の3点を伝える。"}
 ];
+
+/* ---- PRONUNCIATION (IPA = 正、カタカナ = 目安。[ ] が強く読む部分) ---- */
+const PRON = {
+  "pace":["peɪs","[ペ]イス"], "recovery":["rɪˈkʌvəri","リ[カ]バリー"], "teammate":["ˈtiːmmeɪt","[ティー]ムメイト"],
+  "coach":["koʊtʃ","[コ]ウチ"], "facility":["fəˈsɪləti","ファ[シ]リティ"], "injury":["ˈɪndʒəri","[イ]ンジャリー"],
+  "competition":["ˌkɑːmpəˈtɪʃən","カンペ[ティ]ション"], "warm-up":["ˈwɔːrmʌp","[ウォー]ムアップ"], "interval":["ˈɪntərvəl","[イ]ンターバル"],
+  "mileage":["ˈmaɪlɪdʒ","[マ]イレッジ"], "roommate":["ˈruːmmeɪt","[ルー]ムメイト"], "dormitory":["ˈdɔːrmətɔːri","[ドー]ミトーリー"],
+  "scholarship":["ˈskɑːlərʃɪp","[スカ]ラーシップ"], "visa":["ˈviːzə","[ヴィー]ザ"], "apartment":["əˈpɑːrtmənt","ア[パー]トメント"],
+  "groceries":["ˈɡroʊsəriz","[グロウ]サリーズ"], "homesick":["ˈhoʊmsɪk","[ホウ]ムシック"], "jet lag":["ˈdʒet læɡ","[ジェ]ット ラグ"],
+  "locker room":["ˈlɑːkər ruːm","[ラ]カー ルーム"], "physiotherapist":["ˌfɪzioʊˈθerəpɪst","フィジオ[セ]ラピスト"], "stride":["straɪd","ス[トゥラ]イド"],
+  "tempo run":["ˈtempoʊ rʌn","[テ]ンポウ ラン"], "cooldown":["ˈkuːldaʊn","[クー]ルダウン"], "tuition":["tuˈɪʃən","トゥ[イ]ション"],
+  "permit":["ˈpɜːrmɪt","[パー]ミット"], "endurance":["ɪnˈdʊrəns","イン[ドゥ]ランス"], "sprint":["sprɪnt","ス[プリ]ント"],
+  "threshold":["ˈθreʃhoʊld","[スレ]ッシュホウルド"], "taper":["ˈteɪpər","[テ]イパー"], "split":["splɪt","ス[プリ]ット"],
+  "cross-training":["ˈkrɔːs treɪnɪŋ","[クロ]ス トレイニング"], "hydration":["haɪˈdreɪʃən","ハイ[ドレ]イション"], "electrolytes":["ɪˈlektrəlaɪts","イ[レ]クトロライツ"],
+  "overtraining":["ˌoʊvərˈtreɪnɪŋ","オウヴァー[トレ]イニング"], "shin splints":["ˈʃɪn splɪnts","[シ]ン スプリンツ"], "rehab":["ˈriːhæb","[リー]ハブ"],
+  "personal best":["ˌpɜːrsənəl ˈbest","パーソナル [ベ]スト"], "qualifying time":["ˈkwɑːlɪfaɪɪŋ taɪm","[クワ]リファイイング タイム"], "relay":["ˈriːleɪ","[リー]レイ"],
+  "spikes":["spaɪks","ス[パイ]クス"], "heat":["hiːt","[ヒー]ト"], "final":["ˈfaɪnəl","[ファ]イナル"], "credit":["ˈkredɪt","[クレ]ディット"],
+  "semester":["səˈmestər","セ[メ]スター"], "part-time job":["ˌpɑːrt taɪm ˈdʒɑːb","パートタイム [ジャ]ブ"], "budget":["ˈbʌdʒɪt","[バ]ジェット"],
+  "currency exchange":["ˈkɜːrənsi ɪksˈtʃeɪndʒ","[カー]レンシー イクス[チェ]インジ"], "landlord":["ˈlændlɔːrd","[ラ]ンドロード"],
+  "immigration":["ˌɪmɪˈɡreɪʃən","イミ[グレ]イション"], "connecting flight":["kəˈnektɪŋ flaɪt","カ[ネ]クティング フライト"]
+};
+function kanaHtml(k) { return escapeHtml(k || "").replace(/\[([^\]]+)\]/g, "<b>$1</b>"); }
+// word: {w, ipa?, kana?}。IPAを主、カタカナは補助として表示し、🔊で実際の音を確認できる。
+function pronHtml(word) {
+  if (!word || !word.w) return "";
+  const p = PRON[(word.w || "").toLowerCase()];
+  const ipa = word.ipa || (p && p[0]) || "";
+  const kana = word.kana || (p && p[1]) || "";
+  return `<div class="pron">
+    <span class="speakbtn" data-speak="${escapeHtml(word.w)}">🔊</span>
+    ${ipa ? `<span class="ipa">/${escapeHtml(ipa)}/</span>` : ""}
+    ${kana ? `<span class="kana">${kanaHtml(kana)}</span>` : ""}
+    ${kana ? `<div class="caution">※カタカナは目安です。正しい発音は🔊とIPAで確認しよう（太字＝強く読む部分）。</div>` : ""}
+  </div>`;
+}
+
+/* ---- SPEECH (読み上げ＝speechSynthesis / 音声入力＝SpeechRecognition。Safari対応、未対応端末では非表示) ---- */
+function speakText(text) {
+  try {
+    if (!window.speechSynthesis || !text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    const voices = window.speechSynthesis.getVoices() || [];
+    const v = voices.find(x => /en[-_]CA/i.test(x.lang)) || voices.find(x => /en[-_]US/i.test(x.lang));
+    if (v) u.voice = v;
+    u.rate = 1;
+    window.speechSynthesis.speak(u);
+  } catch (e) { console.warn("speak failed", e); }
+}
+// 画面のどこでも data-speak を持つ要素をタップすると読み上げる。
+document.addEventListener("click", (e) => {
+  const el = e.target.closest && e.target.closest("[data-speak]");
+  if (el) { e.stopPropagation(); speakText(el.dataset.speak); }
+}, true);
+function speechRecognitionAvailable() {
+  return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
 
 /* ============ STATE ============ */
 const STORAGE_KEY = "etsu_english_state_v2";
-const APP_BUILD = "2026-09-23-diag3-fixlayout"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
+const APP_BUILD = "2026-09-28-bigupdate1"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
 const SRS_LADDER = [1, 3, 7, 14, 30]; // days
 
 function isoDate(d) {
@@ -590,7 +707,7 @@ function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 function isEnglishAnswerCorrect(input, word) {
   if (!input || containsJapanese(input)) return false;
   const norm = normalizeWord(input);
-  const candidates = [word.w, ...(word.accepted || [])].map(normalizeWord);
+  const candidates = [word.w, ...(word.accepted || [])].flatMap(splitAlternatives).map(normalizeWord);
   return candidates.includes(norm);
 }
 
@@ -618,7 +735,7 @@ function buildEnglishJudgePrompt(word, input, contextSentence) {
 
 Target meaning (Japanese): ${[word.jp, ...(word.alternatives || [])].join(" / ")}
 Registered reference answer: "${word.w}" (${word.pos || ""})
-${contextSentence ? `The word must fit naturally in this exact sentence (with the blank shown as ___): "${contextSentence}"` : `Typical usage: "${word.example.replace("___", word.w)}"`}
+${contextSentence ? `The word must fit naturally in this exact sentence (with the blank shown as ___): "${contextSentence}"` : (word.example ? `Typical usage: "${word.example.replace("___", word.w)}"` : "")}
 
 The learner typed: "${input}"
 
@@ -696,22 +813,54 @@ Classify it using ONLY these three buckets, anchored to the registered meanings 
 Reply with STRICT JSON only, no markdown fences: {"verdict": "correct" | "close" | "incorrect"}`;
 }
 
+// "felt pretty good / felt okay" のように「/」で複数候補が入っている表現を分割する。
+function splitAlternatives(s) {
+  return (s || "").split("/").map(x => x.trim()).filter(Boolean);
+}
+function englishWordCount(s) {
+  return ((s || "").match(/[A-Za-z][A-Za-z'’-]*/g) || []).length;
+}
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  if (Math.abs(m - n) > 2) return 99;
+  const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 1; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+  }
+  return d[m][n];
+}
+// 対象表現の各単語について、入力文中に「綴りが1〜2文字違うだけの語」があれば返す（okey → okay など）。
+function findSpellingNearMiss(sentence, word) {
+  const tokens = ((sentence || "").toLowerCase().match(/[a-z']+/g) || []);
+  const targets = new Set();
+  [word.w, ...(word.accepted || [])].forEach(a => splitAlternatives(a).forEach(alt =>
+    (alt.toLowerCase().match(/[a-z']+/g) || []).forEach(t => { if (t.length >= 3) targets.add(t); })));
+  for (const t of targets) {
+    if (tokens.includes(t)) continue;
+    const maxDist = t.length >= 7 ? 2 : 1;
+    const hit = tokens.find(tok => tok.length >= 3 && levenshtein(tok, t) > 0 && levenshtein(tok, t) <= maxDist);
+    if (hit) return { typed: hit, expected: t };
+  }
+  return null;
+}
+// 単語タップで意味は表示するが、単語帳には入れない機能語。
+const LOOKUP_STOPWORDS = new Set(["a","an","the","that","this","these","those","it","its","is","am","are","was","were","be","been","to","of","in","on","at","for","with","and","or","but","so","i","you","he","she","we","they","me","my","your","his","her","our","their","do","does","did","not","no","yes","if","as","by","from","up","out","just","there","here","what","how","who","when","where","which"]);
+
 // Deterministic "was the target word actually used" check for free-form sentences (produce type).
 // This is intentionally independent of any AI judgment — it's the hard gate the AI cannot override.
 function wordFormsFor(word) {
   const forms = new Set();
   const push = s => { if (s) forms.add(s.toLowerCase()); };
-  push(word.w);
-  push(word.w.replace(/-/g, " "));
-  push(word.w.replace(/-/g, ""));
-  push(word.w.replace(/ /g, ""));
-  (word.accepted || []).forEach(a => {
+  [word.w, ...(word.accepted || [])].forEach(raw => splitAlternatives(raw).forEach(a => {
     push(a); push(a.replace(/-/g, " ")); push(a.replace(/-/g, "")); push(a.replace(/ /g, ""));
-  });
+  }));
   return [...forms];
 }
 function containsTargetWord(sentence, word) {
   if (!sentence) return false;
+  const alts = splitAlternatives(word.w);
+  if (alts.length > 1) return alts.some(a => containsTargetWord(sentence, { ...word, w: a }));
   const norm = sentence.toLowerCase();
   const isPhrase = /[\s-]/.test(word.w);
   if (isPhrase) {
@@ -872,6 +1021,7 @@ function go(tab) {
   currentTab = tab;
   if (tab === "vocab") vocabSession = null;
   if (tab === "conversation") convoSession = null;
+  stopMic(null);
   if (tab === "review") reviewSession = null;
   if (tab === "test") testSession = null;
   render();
@@ -917,6 +1067,19 @@ function renderHome() {
       <div class="statcard"><div class="num">${dueTodayItems().length}</div><div class="lbl">本日の復習予定</div></div>
     </div>
 
+    ${(() => {
+      const tally = {};
+      (state.srsItems || []).filter(i => !i.mastered).forEach(i => tallyWeakPoints(tally, i.mistakeType));
+      const top = Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, 3);
+      const times = state.replyTimeLog || [];
+      const avg = times.length ? Math.round(times.slice(-15).reduce((a, b) => a + b, 0) / Math.min(times.length, 15)) : null;
+      if (!top.length && avg == null) return "";
+      return `<div class="evalcard">
+        <div class="row"><div class="k">弱点TOP3</div><div>${top.length ? top.map(([k, n]) => `${weakPointLabel(k)}（${n}）`).join(" / ") : "—"}</div></div>
+        <div class="row"><div class="k">返答時間</div><div>${avg != null ? `直近の平均 ${avg}秒` : "—"}</div></div>
+        <div class="row"><div class="k">ヒント</div><div>累計 ${state.hintTotal || 0}回</div></div>
+      </div>`;
+    })()}
     <div class="tasklist">
       <div class="task ${d.vocab?'done':''}" data-go="vocab">
         <div class="icon">🔤</div>
@@ -1085,6 +1248,7 @@ function renderVocab() {
       <div class="qword">
         <div class="w">${w.w}</div>
         <div class="hint">この単語の意味は？</div>
+        ${pronHtml(w)}
       </div>
       <div class="options" id="opts">
         ${it.options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join("")}
@@ -1130,7 +1294,7 @@ function renderVocab() {
       </div>
       <input class="answer" id="vocabInput" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
       ${s.revealed ? "" : `<button class="cta" id="vocabCheck" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
-      ${s.revealed ? renderRecallFeedback(it, w, s) : ""}
+      ${s.revealed ? renderRecallFeedback(it, w, s) + pronHtml(w) : ""}
       ${s.revealed ? `<button class="cta" id="vocabNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
     `;
     bindBack();
@@ -1177,6 +1341,7 @@ function renderVocab() {
       </div>
       <textarea class="answer" id="vocabSentence" placeholder="この単語を使って短い英文を作ってみよう" ${s.busy ? "disabled" : ""}>${s.draftText || ""}</textarea>
       ${s.evalResult ? "" : `<button class="cta" id="vocabProduceCheck" ${s.busy ? "disabled" : ""} style="width:100%;">${s.busy ? "確認中…" : "添削してもらう"}</button>`}
+      ${s.inputWarning && !s.evalResult ? `<div style="margin:8px 0;font-size:13px;color:var(--accent);font-weight:600;">⚠️ ${s.inputWarning}</div>` : ""}
       <div id="produceEvalArea"></div>
       ${s.evalResult ? `<button class="cta" id="vocabNext" style="width:100%;margin-top:6px;">次へ</button>` : ""}
     `;
@@ -1193,7 +1358,7 @@ function renderVocab() {
             <div style="margin:6px 0 2px;"><b>あなたの回答：</b> ${escapeHtml(s.draftText || "（空欄）")}</div>
             <div style="margin:2px 0;"><b>正解：</b> 「${w.w}」を使った英文（例：${w.example.replace("___", w.w)}）</div>
             <div style="margin:2px 0;"><b>より自然な表現：</b> ${w.example.replace("___", w.w)}</div>
-            <div style="margin:2px 0;"><b>ポイント：</b> 「${w.w}」という単語が文中で使われていません。</div>
+            <div style="margin:2px 0;"><b>ポイント：</b> ${r.spellingMiss ? `スペルミス：「${escapeHtml(r.spellingMiss.typed)}」→「${escapeHtml(r.spellingMiss.expected)}」` : `「${w.w}」という単語が文中で使われていません。`}</div>
           </div>`;
       } else {
         feedbackHtml = `
@@ -1207,7 +1372,7 @@ function renderVocab() {
           ` + renderEvalCard(r);
         }
       }
-      document.getElementById("produceEvalArea").innerHTML = feedbackHtml;
+      document.getElementById("produceEvalArea").innerHTML = feedbackHtml + pronHtml(w);
       document.getElementById("vocabNext").addEventListener("click", () => {
         gradeAndContinue(passed, 0);
       });
@@ -1217,6 +1382,11 @@ function renderVocab() {
       document.getElementById("vocabProduceCheck").addEventListener("click", async () => {
         const text = ta.value.trim();
         if (!text || s.busy) return;
+        if (englishWordCount(text) < 3) {
+          s.draftText = text; s.inputWarning = "3語以上の英文で書いてみよう（採点はしていません）。"; render();
+          return;
+        }
+        s.inputWarning = null;
         s.busy = true;
         s.draftText = text;
         render();
@@ -1229,7 +1399,7 @@ function renderVocab() {
             wordUsed: false, grammarCorrect: true, grammarNote: "", naturalness: "natural", naturalNote: "",
             better: w.example.replace("___", w.w), betterIsCorrection: false, points: [],
             issueFound: true, issueCategory: "word-usage", mistakeType: "word-usage", importance: "medium",
-            reviewPromptJp: w.jp
+            reviewPromptJp: w.jp, spellingMiss: findSpellingNearMiss(text, w)
           };
         } else {
           const sample = await getSample();
@@ -1244,13 +1414,16 @@ function renderVocab() {
         s.busy = false;
         s.evalResult = result;
         if (result.issueFound) {
+          // 復習では「単語」として出題されるので、添削後の文ではなく単語そのものを登録する。
+          // 添削後の文は「覚えておくポイント」に残す。
+          const pointText = (result.points && result.points[0]) || result.grammarNote || result.naturalNote || "";
           addSrsItem({
-            jp: result.reviewPromptJp || w.jp,
-            en: result.better || text,
+            jp: w.jp,
+            en: w.w,
             type: "vocab",
             mistakeType: result.mistakeType || "phrasing",
             importance: result.importance || "medium",
-            note: (result.points && result.points[0]) || result.grammarNote || result.naturalNote || ""
+            note: [pointText, result.better ? `例：${result.better}` : ""].filter(Boolean).join(" ")
           });
         }
         render();
@@ -1283,6 +1456,7 @@ function renderVocab() {
       s.lastNote = null;
       s.evalResult = null;
       s.draftText = "";
+      s.inputWarning = null;
       s.busy = false;
       if (s.idx >= s.items.length) {
         s.finished = true;
@@ -1396,7 +1570,12 @@ function renderConversation() {
           targetTurns: 3 + Math.floor(Math.random() * 3), // 3–5 turns
           loggedItems: [],
           busy: false,
-          finished: false
+          finished: false,
+          npcShownAt: Date.now(),   // 返答タイマー：相手のセリフが表示された時刻
+          replyTimes: [],
+          hintCount: 0,
+          hintResult: null, hintBusy: false,
+          draftText: ""
         };
         renderConversation();
       });
@@ -1418,7 +1597,12 @@ function renderConversation() {
     </div>
     <div id="thread"></div>
     <div id="wordLookupArea"></div>
-    <textarea class="answer" id="userAns" placeholder="英語で返信してください…" ${s.busy ? "disabled" : ""}></textarea>
+    <div id="hintArea"></div>
+    <div class="toolrow">
+      <button class="cta secondary" id="hintBtn" ${s.busy || s.hintBusy ? "disabled" : ""}>💡 ヒント${s.hintCount ? `（${s.hintCount}回）` : ""}</button>
+      ${speechRecognitionAvailable() ? `<button class="cta secondary" id="micBtn" ${s.busy ? "disabled" : ""}>🎤 声で入力</button>` : ""}
+    </div>
+    <textarea class="answer" id="userAns" placeholder="英語で返信してください…" ${s.busy ? "disabled" : ""}>${escapeHtml(s.draftText || "")}</textarea>
     <button class="cta" id="submitAns" ${s.busy ? "disabled" : ""} style="width:100%;">${s.busy ? "確認中…" : "送信"}</button>
   `;
   document.getElementById("backList").addEventListener("click", () => { convoSession = null; renderConversation(); });
@@ -1427,10 +1611,10 @@ function renderConversation() {
   s.thread.forEach(item => {
     if (item.from === "npc") {
       threadEl.insertAdjacentHTML("beforeend", `
-        <div class="bubble npc"><div class="who">${item.who}</div>${wrapTappableWords(item.text)}</div>`);
+        <div class="bubble npc"><div class="who">${item.who} <span class="speakbtn" data-speak="${escapeHtml(item.text)}">🔊</span></div>${wrapTappableWords(item.text)}</div>`);
     } else if (item.from === "me") {
       threadEl.insertAdjacentHTML("beforeend", `
-        <div class="bubble me"><div class="who">You</div>${escapeHtml(item.text)}</div>`);
+        <div class="bubble me"><div class="who">You</div>${escapeHtml(item.text)}${item.secs != null ? `<div class="replytime">⏱ 返答まで ${item.secs}秒</div>` : ""}</div>`);
     } else if (item.from === "eval") {
       threadEl.insertAdjacentHTML("beforeend", renderEvalCard(item.data));
     }
@@ -1444,16 +1628,26 @@ function renderConversation() {
     lookupUnknownWord(el.dataset.word, contextText, s);
   });
   renderWordLookupArea(s);
+  renderHintArea(s);
 
+  const ansEl = document.getElementById("userAns");
+  ansEl.addEventListener("input", () => { s.draftText = ansEl.value; });
   document.getElementById("submitAns").addEventListener("click", () => handleSend());
-  document.getElementById("userAns").focus();
+  document.getElementById("hintBtn").addEventListener("click", () => requestHint(s));
+  const micBtn = document.getElementById("micBtn");
+  if (micBtn) micBtn.addEventListener("click", () => toggleMic(s, ansEl, micBtn));
+  ansEl.focus();
 
   async function handleSend() {
     const ta = document.getElementById("userAns");
     const text = ta.value.trim();
     if (!text || s.busy) return;
+    stopMic(s);
     s.busy = true;
-    s.thread.push({ from: "me", text });
+    const secs = Math.max(0, Math.round((Date.now() - (s.npcShownAt || Date.now())) / 1000));
+    s.replyTimes.push(secs);
+    s.draftText = ""; s.hintResult = null;
+    s.thread.push({ from: "me", text, secs });
     const isFinalTurn = (s.turn + 1) >= s.targetTurns;
     renderConversation();
     document.getElementById("thread").insertAdjacentHTML("beforeend", `<div class="bubble npc thinking" id="thinkingBubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`);
@@ -1477,6 +1671,7 @@ function renderConversation() {
     if (result.coachNext) {
       s.thread.push({ from: "npc", who: s.convo.who, text: result.coachNext });
     }
+    s.npcShownAt = Date.now();
     if (result.issueFound) {
       s.loggedItems.push({
         point: (result.points && result.points[0]) || "",
@@ -1494,11 +1689,118 @@ function renderConversation() {
     s.busy = false;
     if (isFinalTurn) {
       s.finished = true;
+      state.hintTotal = (state.hintTotal || 0) + (s.hintCount || 0);
+      state.replyTimeLog = [...(state.replyTimeLog || []), ...s.replyTimes].slice(-100);
+      saveState();
       commitConversationExpressions(s);
       markDoneToday("conversation"); // fires as soon as the session is actually complete
     }
     renderConversation();
   }
+}
+
+/* ---- HINT: 全訳は出さず、使えるキーワードの断片だけを出す ---- */
+function buildHintPrompt(convo, npcLine, draft) {
+  return `You are helping a Japanese ESL runner who is stuck replying in an English conversation (scenario: ${convo.title}).
+The other person just said: "${npcLine}"
+${draft ? `His unfinished reply so far: "${draft}"` : "He has not written anything yet."}
+
+Give ONLY 2-4 short English keyword fragments (1-3 words each) he could use in his reply. NEVER give a full sentence or a full translation.
+Also give one short Japanese cue (under 25 characters) about what to talk about.
+
+Reply with STRICT JSON only, no markdown fences:
+{"keywords": ["fragment", "fragment"], "cueJp": "短い日本語のヒント"}`;
+}
+async function requestHint(s) {
+  if (s.hintBusy || s.busy) return;
+  const lastNpc = [...s.thread].reverse().find(t => t.from === "npc");
+  s.hintBusy = true; s.hintResult = null; renderHintArea(s);
+  const btn = document.getElementById("hintBtn"); if (btn) btn.disabled = true;
+  let res = null;
+  try {
+    const sample = await getSample();
+    res = await sample.json(buildHintPrompt(s.convo, lastNpc ? lastNpc.text : "", s.draftText || ""));
+  } catch (e) { console.warn("hint failed", e); }
+  s.hintBusy = false;
+  if (res && Array.isArray(res.keywords) && res.keywords.length) {
+    s.hintCount += 1;
+    s.hintResult = { keywords: res.keywords.slice(0, 4), cueJp: res.cueJp || "" };
+  } else {
+    s.hintResult = { error: true };
+  }
+  renderHintArea(s);
+  if (btn) { btn.disabled = false; btn.textContent = `💡 ヒント（${s.hintCount}回）`; }
+}
+function renderHintArea(s) {
+  const el = document.getElementById("hintArea");
+  if (!el) return;
+  if (s.hintBusy) { el.innerHTML = `<div class="correctbox" style="margin-bottom:8px;">ヒントを考えています…</div>`; return; }
+  const r = s.hintResult;
+  if (!r) { el.innerHTML = ""; return; }
+  if (r.error) { el.innerHTML = `<div class="correctbox" style="margin-bottom:8px;color:var(--muted);">ヒントを取得できませんでした。もう一度押してみて。</div>`; return; }
+  el.innerHTML = `<div class="correctbox" style="margin-bottom:8px;">
+    <div class="lbl">💡 使えそうな言葉</div>
+    ${r.keywords.map(k => `<span class="pill medium" style="margin:2px 4px 2px 0;">${escapeHtml(k)}</span>`).join("")}
+    ${r.cueJp ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);">${escapeHtml(r.cueJp)}</div>` : ""}
+  </div>`;
+}
+
+/* ---- MIC: 声で入力（認識結果はテキスト欄に入るので、送信前に確認・修正できる） ---- */
+let activeRecognition = null;
+function stopMic(s) {
+  if (activeRecognition) { try { activeRecognition.stop(); } catch (e) {} activeRecognition = null; }
+  if (s) s.listening = false;
+}
+function toggleMic(s, ansEl, btn) {
+  if (s.listening) { stopMic(s); btn.textContent = "🎤 声で入力"; return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+  const rec = new SR();
+  rec.lang = "en-US";
+  rec.interimResults = true;
+  rec.continuous = false;
+  const base = ansEl.value ? ansEl.value.replace(/\s*$/, " ") : "";
+  rec.onresult = (ev) => {
+    let t = "";
+    for (let i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
+    ansEl.value = base + t;
+    s.draftText = ansEl.value;
+  };
+  rec.onerror = (ev) => {
+    console.warn("speech error", ev.error);
+    btn.textContent = ev.error === "not-allowed" ? "🎤 マイクが許可されていません" : "🎤 聞き取れませんでした";
+  };
+  rec.onend = () => {
+    s.listening = false; activeRecognition = null;
+    if (/聞いています/.test(btn.textContent)) btn.textContent = "🎤 声で入力";
+  };
+  try {
+    rec.start();
+    activeRecognition = rec; s.listening = true;
+    btn.textContent = "⏹ 聞いています…（タップで停止）";
+  } catch (e) { console.warn("speech start failed", e); }
+}
+
+/* ---- 会話後のまとめ：相手のセリフの日本語訳（会話中は出さない） ---- */
+function buildNpcTranslatePrompt(lines) {
+  return `Translate each English line into natural, casual Japanese. Keep the same order and count.
+Lines:
+${lines.map((l, i) => `${i + 1}. ${l}`).join("\n")}
+
+Reply with STRICT JSON only, no markdown fences: {"jp": ["訳1", "訳2"]}`;
+}
+async function loadNpcTranslations(s) {
+  if (s.npcJp || s.npcJpBusy) return;
+  const lines = s.thread.filter(t => t.from === "npc").map(t => t.text);
+  if (!lines.length) return;
+  s.npcJpBusy = true;
+  try {
+    const sample = await getSample();
+    const res = await sample.json(buildNpcTranslatePrompt(lines));
+    s.npcJp = (res && Array.isArray(res.jp)) ? res.jp : [];
+  } catch (e) { console.warn("translate failed", e); s.npcJp = []; }
+  s.npcJpBusy = false;
+  if (convoSession === s && currentTab === "conversation") renderConversation();
 }
 
 // Called once, at the end of a session: picks at most the top 2-3 issues by importance
@@ -1536,6 +1838,15 @@ function renderConvoSummary(s) {
       <p class="greet">${s.convo.jp} · ${s.turn}ターン</p>
       <p class="goal" style="font-size:26px;">セッション終了。</p>
     </div>
+    <div class="evalcard">
+      <div class="row"><div class="k">返答時間</div><div>${(s.replyTimes || []).length ? `平均 ${Math.round(s.replyTimes.reduce((a, b) => a + b, 0) / s.replyTimes.length)}秒（${s.replyTimes.join("秒 / ")}秒）` : "—"}</div></div>
+      <div class="row"><div class="k">ヒント</div><div>${s.hintCount || 0}回使用</div></div>
+    </div>
+    <div class="evalcard">
+      <div class="row"><div class="k">相手のセリフ</div><div>${s.npcJpBusy || !s.npcJp ? "日本語訳を準備中…" : ""}</div></div>
+      ${s.thread.filter(t => t.from === "npc").map((t, i) => `
+        <div class="row"><div class="k"><span class="speakbtn" data-speak="${escapeHtml(t.text)}">🔊</span></div><div>${escapeHtml(t.text)}${s.npcJp && s.npcJp[i] ? `<div style="font-size:12.5px;color:var(--muted);margin-top:2px;">${escapeHtml(s.npcJp[i])}</div>` : ""}</div></div>`).join("")}
+    </div>
     ${items.length === 0 ? `
       <div class="empty"><div class="big">🎯</div>大きなミスはありませんでした。</div>
     ` : `
@@ -1552,6 +1863,7 @@ function renderConvoSummary(s) {
     <button class="cta" id="finishConvo" style="width:100%;">ホームに戻る</button>
   `;
   document.getElementById("backHome").addEventListener("click", () => go("home"));
+  loadNpcTranslations(s);
   document.getElementById("finishConvo").addEventListener("click", () => {
     markDoneToday("conversation");
     convoSession = null;
@@ -1630,6 +1942,9 @@ function renderRecallFeedback(it, w, s) {
 }
 
 function renderEvalCard(d) {
+  // 判定がない項目（AIが使えなかった等）は「OK」と偽らず、行ごと表示しない。
+  const hasGrammar = typeof d.grammarCorrect === "boolean";
+  const hasNatural = !!d.naturalness;
   const grammarPill = d.grammarCorrect
     ? `<span class="pill ok">文法OK</span>`
     : `<span class="pill issue">文法ミス</span>`;
@@ -1640,9 +1955,9 @@ function renderEvalCard(d) {
       : `<span class="pill medium">より自然な表現あり</span>`;
   return `
     <div class="evalcard">
-      <div class="row"><div class="k">文法</div><div>${d.grammarNote || (d.grammarCorrect ? "文法的な誤りはありません。" : "")}${grammarPill}</div></div>
-      <div class="row"><div class="k">自然さ</div><div>${d.naturalNote || ""}${naturalPill}</div></div>
-      <div class="row better"><div class="k">より自然な英語</div><div>${d.better || ""}</div></div>
+      ${hasGrammar ? `<div class="row"><div class="k">文法</div><div>${d.grammarNote || (d.grammarCorrect ? "文法的な誤りはありません。" : "")}${grammarPill}</div></div>` : ""}
+      ${hasNatural ? `<div class="row"><div class="k">自然さ</div><div>${d.naturalNote || ""}${naturalPill}</div></div>` : ""}
+      ${d.better ? `<div class="row better"><div class="k">より自然な英語</div><div>${d.better}</div></div>` : ""}
       ${(d.points && d.points.length) ? `<div class="row point"><div class="k">ポイント</div><div>${d.points.join(" / ")}</div></div>` : ""}
     </div>`;
 }
@@ -1775,7 +2090,9 @@ Reply with STRICT JSON only, no markdown fences:
 {
  "jp": "short Japanese meaning as used here (a word or short phrase, not a full sentence)",
  "pos": "short Japanese part-of-speech label, e.g. 動詞 / 名詞 / 形容詞 / 副詞",
- "note": "one short Japanese sentence with a usage nuance or tip, or empty string if not needed"
+ "note": "one short Japanese sentence with a usage nuance or tip, or empty string if not needed",
+ "ipa": "General American IPA without slashes, with ˈ stress marks",
+ "kana": "katakana approximation, wrapping the stressed part in [ ] (e.g. リ[カ]バリー)"
 }`;
 }
 
@@ -1791,7 +2108,7 @@ async function lookupUnknownWord(rawWord, contextSentence, s) {
   const wb = findWordBankEntry(cleaned);
   let result = null;
   if (wb) {
-    result = { jp: wb.jp, pos: wb.pos, note: "" };
+    result = { jp: wb.jp, pos: wb.pos, note: "", ipa: (PRON[wb.w] || [])[0] || "", kana: (PRON[wb.w] || [])[1] || "" };
   } else {
     try {
       const sample = await getSample();
@@ -1802,9 +2119,12 @@ async function lookupUnknownWord(rawWord, contextSentence, s) {
     }
   }
   s.wordLookupBusy = false;
-  if (result && result.jp) {
-    addSrsItem({ jp: result.jp, en: cleaned, type: "vocab", mistakeType: "unknown-word", importance: "medium", note: result.note || "" });
-    s.wordLookupResult = { word: cleaned, jp: result.jp, pos: result.pos || "", note: result.note || "", added: true };
+  if (result && result.jp && LOOKUP_STOPWORDS.has(cleaned.toLowerCase())) {
+    s.wordLookupResult = { word: cleaned, jp: result.jp, pos: result.pos || "", note: result.note || "", added: true, skipped: true };
+  } else if (result && result.jp) {
+    const added = addSrsItem({ jp: result.jp, en: cleaned, type: "vocab", mistakeType: "unknown-word", importance: "medium", note: result.note || "" });
+    if (added) { added.ipa = result.ipa || added.ipa || ""; added.kana = result.kana || added.kana || ""; saveState(); }
+    s.wordLookupResult = { word: cleaned, jp: result.jp, pos: result.pos || "", note: result.note || "", ipa: result.ipa || "", kana: result.kana || "", added: true };
   } else {
     s.wordLookupResult = { word: cleaned, added: false };
   }
@@ -1841,7 +2161,10 @@ function renderWordLookupArea(s) {
         </div>
         <div style="margin-top:4px;">${r.pos ? `<span style="color:var(--muted);">${escapeHtml(r.pos)}</span> · ` : ""}${escapeHtml(r.jp)}</div>
         ${r.note ? `<div style="margin-top:4px;font-size:12.5px;color:var(--muted);">${escapeHtml(r.note)}</div>` : ""}
-        <div style="margin-top:6px;font-size:12.5px;color:var(--good);">✅ 単語帳に追加しました（Reviewに登場します）</div>
+        ${pronHtml({ w: r.word, ipa: r.ipa, kana: r.kana })}
+        ${r.skipped
+          ? `<div style="margin-top:6px;font-size:12.5px;color:var(--muted);">基本語なので単語帳には追加していません。</div>`
+          : `<div style="margin-top:6px;font-size:12.5px;color:var(--good);">✅ 単語帳に追加しました（Reviewに登場します）</div>`}
       </div>`;
   }
   const closeBtn = document.getElementById("wlClose");
@@ -1853,7 +2176,7 @@ function itemTargetWord(item) {
     return { w: item.expression || item.en, jp: item.jp, accepted: [], alternatives: [], close: [], category: item.category || "", example: item.natural || null, exampleJp: null };
   }
   const wb = findWordBankEntry(item.en);
-  return { w: item.en, jp: item.jp, accepted: (wb && wb.accepted) || [], alternatives: (wb && wb.alternatives) || [], close: (wb && wb.close) || [], category: (wb && wb.category) || "", example: wb ? wb.example : null, exampleJp: wb ? wb.exampleJp : null };
+  return { ipa: item.ipa || "", kana: item.kana || "", w: item.en, jp: item.jp, accepted: (wb && wb.accepted) || [], alternatives: (wb && wb.alternatives) || [], close: (wb && wb.close) || [], category: (wb && wb.category) || "", example: wb ? wb.example : null, exampleJp: wb ? wb.exampleJp : null };
 }
 // Builds a fill-in-the-blank sentence for cloze-type review, from the word's own example
 // (vocab) or by blanking the expression out of its corrected sentence (expression). Returns
@@ -1941,7 +2264,7 @@ function renderReview() {
         <div class="hint" style="margin-bottom:14px;">${hint}</div>
         <input class="answer" id="revAns" placeholder="${placeholder}" autocomplete="off" ${s.revealed || s.checking ? "disabled" : ""}>
         ${s.revealed ? "" : `<button class="cta" id="revSubmit" ${s.checking ? "disabled" : ""}>${s.checking ? "判定中…" : "確認"}</button>`}
-        ${s.revealed ? renderItemFeedback(type, target, s, item) : ""}
+        ${s.revealed ? renderItemFeedback(type, target, s, item) + pronHtml(target) : ""}
         ${s.revealed ? `<button class="cta" id="revNext" style="margin-top:12px;width:100%;">次へ</button>` : ""}
       </div>
     `;
@@ -1984,6 +2307,7 @@ function renderReview() {
       <div class="hint" style="margin-bottom:14px;">対象表現：${target.w}</div>
       <textarea class="answer" id="revProduce" placeholder="英語で入力してください…" ${s.checking ? "disabled" : ""}>${s.draftText || ""}</textarea>
       ${s.evalResult ? "" : `<button class="cta" id="revProduceCheck" ${s.checking ? "disabled" : ""} style="width:100%;">${s.checking ? "確認中…" : "添削してもらう"}</button>`}
+      ${s.inputWarning && !s.evalResult ? `<div style="margin:8px 0;font-size:13px;color:var(--accent);font-weight:600;">⚠️ ${s.inputWarning}</div>` : ""}
       <div id="revEvalArea"></div>
       ${s.evalResult ? `<button class="cta" id="revNext" style="width:100%;margin-top:6px;">次へ</button>` : ""}
     </div>
@@ -1991,10 +2315,15 @@ function renderReview() {
   document.getElementById("backHome").addEventListener("click", () => go("home"));
   if (s.evalResult) {
     const r = s.evalResult;
-    const passed = r.wordUsed && r.grammarCorrect;
-    document.getElementById("revEvalArea").innerHTML = (r.wordUsed === false ? `
-      <div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ 「${target.w}」がまだ使われていません。</div>
-    ` : `<div style="margin:10px 0;font-size:13px;color:var(--good);font-weight:600;">✅ 「${target.w}」を使えています。</div>`) + renderEvalCard(r)
+    const usageLine = r.wordUsed
+      ? `<div style="margin:10px 0;font-size:13px;color:var(--good);font-weight:600;">✅ 「${target.w}」を使えています。</div>`
+      : r.spellingMiss
+        ? `<div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ スペルミス：「${escapeHtml(r.spellingMiss.typed)}」→「${escapeHtml(r.spellingMiss.expected)}」</div>`
+        : `<div style="margin:10px 0;font-size:13px;color:var(--bad);font-weight:600;">❌ 「${target.w}」がまだ使われていません。</div>`;
+    document.getElementById("revEvalArea").innerHTML = usageLine
+      + (s.aiFailed ? `<div style="margin:6px 0;font-size:12.5px;color:var(--muted);">※ AI添削に接続できなかったため、文法・自然さは判定していません。</div>` : "")
+      + renderEvalCard(r)
+      + pronHtml(target)
       + (item.note ? `<div style="margin-top:8px;font-size:12.5px;color:var(--muted);"><b>覚えておくポイント：</b> ${item.note}</div>` : "")
       + `<div style="margin-top:10px;font-size:13px;color:var(--muted);">📅 ${formatDueLabel(item.dueDate)}</div>`;
     document.getElementById("revNext").addEventListener("click", () => goNext());
@@ -2004,22 +2333,28 @@ function renderReview() {
     document.getElementById("revProduceCheck").addEventListener("click", async () => {
       const text = ta.value.trim();
       if (!text || s.checking) return;
+      // 文になっていない入力（「Dr」など）は採点せず、書き直してもらう。
+      if (englishWordCount(text) < 3) {
+        s.draftText = text; s.inputWarning = "3語以上の英文で書いてみよう（採点はしていません）。"; render();
+        return;
+      }
+      s.inputWarning = null;
       s.checking = true; s.draftText = text; render();
       const localWordUsed = containsTargetWord(text, target);
       let result;
-      if (!localWordUsed) {
-        result = { wordUsed: false, grammarCorrect: true, grammarNote: "", naturalness: "natural", naturalNote: "", better: target.example ? target.example.replace("___", target.w) : target.w, betterIsCorrection: false, points: [], issueFound: true, issueCategory: "word-usage", mistakeType: "word-usage", importance: "medium", reviewPromptJp: target.jp };
-      } else {
-        const sample = await getSample();
-        if (!sample) result = fallbackVocabEval(target, text);
-        else {
-          try { result = await sample.json(buildVocabProducePrompt(target, text)); }
-          catch (e) { console.warn("review produce sample failed", e); result = fallbackVocabEval(target, text); }
-        }
-        result.wordUsed = true;
+      const sample = await getSample();
+      try { result = await sample.json(buildVocabProducePrompt(target, text)); }
+      catch (e) {
+        console.warn("review produce sample failed", e);
+        // AIが使えないときは文法・自然さを「OK」と偽らず、判定なしとして扱う。
+        result = { grammarCorrect: null, grammarNote: "", naturalness: null, naturalNote: "", better: "", points: [], issueFound: true, issueCategory: "word-usage", mistakeType: "word-usage", importance: "medium" };
+        s.aiFailed = true;
       }
+      // 使用チェックはAIに任せず、ローカル判定を常に優先する。
+      result.wordUsed = localWordUsed;
+      result.spellingMiss = localWordUsed ? null : findSpellingNearMiss(text, target);
       // Grade immediately, same as the recall types above, so the countdown shown is current.
-      reviewSrsItem(item, (result.wordUsed && result.grammarCorrect) ? "correct" : "incorrect", type);
+      reviewSrsItem(item, (result.wordUsed && result.grammarCorrect === true) ? "correct" : "incorrect", type);
       s.checking = false; s.evalResult = result; render();
     });
   }
@@ -2027,7 +2362,7 @@ function renderReview() {
   function goNext() {
     s.idx += 1;
     s.revealed = false; s.checking = false; s.currentType = null;
-    s.evalResult = null; s.draftText = "";
+    s.evalResult = null; s.draftText = ""; s.inputWarning = null; s.aiFailed = false;
     render();
   }
 }
@@ -2096,7 +2431,7 @@ const MISTAKE_LABELS = {
   tense: "時制", preposition: "前置詞", article: "冠詞", "word-choice": "語彙選択",
   "word-order": "語順", collocation: "コロケーション", phrasing: "言い回し",
   "word-usage": "単語の使用", grammar: "文法", naturalness: "自然さ",
-  "jp2en": "英単語の想起", "en2jp": "意味の想起", cloze: "穴埋め", other: "その他"
+  "jp2en": "英単語の想起", "en2jp": "意味の想起", cloze: "穴埋め", produce: "英作文", "unknown-word": "知らない単語", other: "その他"
 };
 function weakPointLabel(key) { return MISTAKE_LABELS[key] || key; }
 function tallyWeakPoints(tally, key) { if (!key) return; tally[key] = (tally[key] || 0) + 1; }
