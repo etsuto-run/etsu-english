@@ -486,7 +486,7 @@ function speechRecognitionAvailable() {
 
 /* ============ STATE ============ */
 const STORAGE_KEY = "etsu_english_state_v2";
-const APP_BUILD = "2026-09-28-bigupdate4"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
+const APP_BUILD = "2026-09-29-partnerjp"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
 const SRS_LADDER = [1, 3, 7, 14, 30]; // days
 
 function isoDate(d) {
@@ -1667,6 +1667,8 @@ function renderConversation() {
     } else {
       try {
         result = await sample.json(buildCoachPrompt(s.convo, s.thread, text, isFinalTurn));
+        const prevNpc = [...s.thread].reverse().find(t => t.from === "npc");
+        if (result && prevNpc) result.partnerLine = prevNpc.text;
       } catch (e) {
         console.warn("sample call failed", e);
         result = fallbackEval(text, s.convo, isFinalTurn);
@@ -1984,6 +1986,7 @@ function renderEvalCard(d) {
       : `<span class="pill medium">より自然な表現あり</span>`;
   return `
     <div class="evalcard">
+      ${d.partnerLineJp ? `<div class="row"><div class="k">相手の発言</div><div>${d.partnerLine ? `<div style="font-size:13px;">${escapeHtml(d.partnerLine)}</div>` : ""}<div style="color:var(--muted);font-size:13px;margin-top:2px;">${escapeHtml(d.partnerLineJp)}</div></div></div>` : ""}
       ${hasGrammar ? `<div class="row"><div class="k">文法</div><div>${d.grammarNote || (d.grammarCorrect ? "文法的な誤りはありません。" : "")}${grammarPill}</div></div>` : ""}
       ${hasNatural ? `<div class="row"><div class="k">自然さ</div><div>${d.naturalNote || ""}${naturalPill}</div></div>` : ""}
       ${d.better ? `<div class="row better"><div class="k">より自然な英語</div><div>${d.better}</div></div>` : ""}
@@ -2039,6 +2042,7 @@ Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
  "meaningClear": boolean,
  "better": "a natural native-speaker phrasing of EXACTLY what Etsu said — same facts, same content, nothing added and nothing removed. If grammarCorrect is true and naturalness is 'natural', this can equal or lightly polish the original.",
  "betterJp": "a short, natural Japanese translation of \"better\" (so Etsu can instantly check the meaning)",
+ "partnerLineJp": "natural Japanese translation of the last Coach/Teammate line that Etsu was replying to",
  "betterIsCorrection": boolean (true only if this fixes an actual grammar error; false if it's just a more natural/idiomatic alternative to an already-correct sentence),
  "points": ["at most 3 short Japanese notes, each ONE short sentence, each clearly a grammar note or a naturalness note — do not mix them into one line"],
  "issueFound": boolean (true if there is a real grammar error OR a naturalness alternative worth logging for review; false if the sentence is both grammatically correct and already natural),
