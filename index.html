@@ -486,7 +486,7 @@ function speechRecognitionAvailable() {
 
 /* ============ STATE ============ */
 const STORAGE_KEY = "etsu_english_state_v2";
-const APP_BUILD = "2026-09-28-bigupdate1"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
+const APP_BUILD = "2026-09-28-bigupdate4"; // bump this on every publish so we can tell, on-device, whether stale cached JS is running
 const SRS_LADDER = [1, 3, 7, 14, 30]; // days
 
 function isoDate(d) {
@@ -1484,6 +1484,7 @@ Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
  "naturalness": "one of: natural | more_natural_available | unnatural",
  "naturalNote": "a short JAPANESE note (plain language) from a native runner's perspective; empty string if already natural",
  "better": "a natural native-speaker version of the sentence, still using the target word",
+ "betterJp": "a short, natural Japanese translation of \"better\" (so Etsu can instantly check the meaning)",
  "betterIsCorrection": boolean (true only if fixing a real grammar error),
  "points": ["at most 2 short Japanese notes, one sentence each"],
  "issueFound": boolean (true if there is a real grammar error, the word wasn't used, or a naturalness point worth reviewing),
@@ -1608,7 +1609,8 @@ function renderConversation() {
   document.getElementById("backList").addEventListener("click", () => { convoSession = null; renderConversation(); });
 
   const threadEl = document.getElementById("thread");
-  s.thread.forEach(item => {
+  s.liveJp = s.liveJp || {}; s.liveShown = s.liveShown || {};
+  s.thread.forEach((item, idx) => {
     if (item.from === "npc") {
       threadEl.insertAdjacentHTML("beforeend", `
         <div class="bubble npc"><div class="who">${item.who} <span class="speakbtn" data-speak="${escapeHtml(item.text)}">🔊</span></div>${wrapTappableWords(item.text)}</div>`);
@@ -1642,6 +1644,12 @@ function renderConversation() {
     const ta = document.getElementById("userAns");
     const text = ta.value.trim();
     if (!text || s.busy) return;
+    // 日本語や2語未満の入力はターンを消費せず、AIも呼ばずに差し戻す。
+    if (containsJapanese(text) || englishWordCount(text) < 2) {
+      const hint = document.getElementById("hintArea");
+      if (hint) hint.innerHTML = `<div class="correctbox" style="margin-bottom:8px;color:var(--accent);font-weight:600;">⚠️ 英語で2語以上書いてみよう。詰まったら💡ヒントを使おう（ターンは消費していません）。</div>`;
+      return;
+    }
     stopMic(s);
     s.busy = true;
     const secs = Math.max(0, Math.round((Date.now() - (s.npcShownAt || Date.now())) / 1000));
@@ -1676,6 +1684,7 @@ function renderConversation() {
       s.loggedItems.push({
         point: (result.points && result.points[0]) || "",
         better: result.better || "",
+        betterJp: result.betterJp || "",
         mistakeType: result.mistakeType || "other",
         importance: result.importance || "medium",
         category: result.issueCategory || (result.grammarCorrect === false ? "grammar" : "naturalness"),
@@ -1690,6 +1699,7 @@ function renderConversation() {
     if (isFinalTurn) {
       s.finished = true;
       state.hintTotal = (state.hintTotal || 0) + (s.hintCount || 0);
+      state.transTotal = (state.transTotal || 0) + (s.transCount || 0);
       state.replyTimeLog = [...(state.replyTimeLog || []), ...s.replyTimes].slice(-100);
       saveState();
       commitConversationExpressions(s);
@@ -1789,6 +1799,25 @@ ${lines.map((l, i) => `${i + 1}. ${l}`).join("\n")}
 
 Reply with STRICT JSON only, no markdown fences: {"jp": ["訳1", "訳2"]}`;
 }
+// 会話中の訳：タップした時だけ表示し、使った回数を記録する（ヒントと同じく後で振り返る用）。
+async function toggleLiveTranslation(s, idx) {
+  const item = s.thread[idx];
+  if (!item || item.from !== "npc") return;
+  if (s.liveShown[idx]) { s.liveShown[idx] = false; renderConversation(); return; }
+  s.liveShown[idx] = true;
+  s.transCount = (s.transCount || 0) + 1;
+  if (s.liveJp[idx] !== undefined) { renderConversation(); return; }
+  renderConversation();
+  let jp = "";
+  try {
+    const sample = await getSample();
+    const res = await sample.json(buildNpcTranslatePrompt([item.text]));
+    jp = (res && Array.isArray(res.jp) && res.jp[0]) || "";
+  } catch (e) { console.warn("live translate failed", e); }
+  s.liveJp[idx] = jp;
+  if (convoSession === s && !s.finished) renderConversation();
+}
+
 async function loadNpcTranslations(s) {
   if (s.npcJp || s.npcJpBusy) return;
   const lines = s.thread.filter(t => t.from === "npc").map(t => t.text);
@@ -1856,7 +1885,7 @@ function renderConvoSummary(s) {
       ${items.map(it => `
         <div class="evalcard">
           <div class="row"><div class="k">ポイント</div><div>${it.point}<span class="pill ${it.category === 'grammar' ? 'issue' : 'medium'}">${it.category === 'grammar' ? '文法' : '自然さ'}</span><span class="pill ${it.importance}">${it.importance}</span>${it.saved ? '<span class="pill ok">保存済み</span>' : ''}</div></div>
-          <div class="row better"><div class="k">より自然な英語</div><div>${it.better}</div></div>
+          <div class="row better"><div class="k">より自然な英語</div><div>${it.better}${it.betterJp ? `<div style="font-size:12.5px;color:var(--muted);margin-top:2px;">${escapeHtml(it.betterJp)}</div>` : ""}</div></div>
         </div>`).join("")}
       <p style="font-size:13px;color:var(--muted);margin:4px 4px 18px;">重要度の高いものだけがExpressionとして復習キューに追加されます（1日後に再登場）。</p>
     `}
@@ -1959,6 +1988,7 @@ function renderEvalCard(d) {
       ${hasNatural ? `<div class="row"><div class="k">自然さ</div><div>${d.naturalNote || ""}${naturalPill}</div></div>` : ""}
       ${d.better ? `<div class="row better"><div class="k">より自然な英語</div><div>${d.better}</div></div>` : ""}
       ${(d.points && d.points.length) ? `<div class="row point"><div class="k">ポイント</div><div>${d.points.join(" / ")}</div></div>` : ""}
+      ${d.better && d.betterJp ? `<div class="row"><div class="k">意味</div><div style="color:var(--muted);">${escapeHtml(d.betterJp)}</div></div>` : ""}
     </div>`;
 }
 
@@ -2008,6 +2038,7 @@ Reply with STRICT JSON only, no markdown fences, matching exactly this shape:
  "naturalNote": "a short JAPANESE note (one sentence, plain language) from a native runner's perspective describing the actual issue — empty string if naturalness is 'natural'",
  "meaningClear": boolean,
  "better": "a natural native-speaker phrasing of EXACTLY what Etsu said — same facts, same content, nothing added and nothing removed. If grammarCorrect is true and naturalness is 'natural', this can equal or lightly polish the original.",
+ "betterJp": "a short, natural Japanese translation of \"better\" (so Etsu can instantly check the meaning)",
  "betterIsCorrection": boolean (true only if this fixes an actual grammar error; false if it's just a more natural/idiomatic alternative to an already-correct sentence),
  "points": ["at most 3 short Japanese notes, each ONE short sentence, each clearly a grammar note or a naturalness note — do not mix them into one line"],
  "issueFound": boolean (true if there is a real grammar error OR a naturalness alternative worth logging for review; false if the sentence is both grammatically correct and already natural),
@@ -2674,6 +2705,7 @@ Reply with STRICT JSON only, no markdown fences:
  "expressionNote": "short Japanese note on whether he used natural running/team-context expressions",
  "practicalityNote": "short Japanese note on whether this response would actually work in a real conversation with a teammate/coach",
  "better": "a natural version preserving EXACTLY his stated meaning, nothing added",
+ "betterJp": "a short, natural Japanese translation of \"better\" (so Etsu can instantly check the meaning)",
  "points": ["at most 3 short Japanese notes on what to improve"],
  "weakAreas": ["subset of: grammar, naturalness, vocabulary, expression, practicality — only ones that actually need work"],
  "expression": "optional: one reusable phrase from 'better' worth drilling later, or empty string",
